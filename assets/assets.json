@@ -1,4 +1,15 @@
 {
+	"shahverd": {
+		"content": "filters",
+		"group": "ads",
+		"title": "Mostafa Shahverdy's List Group",
+		"contentURL": [
+            "https://raw.githubusercontent.com/farrokhi/adblock-iran/master/filter.txt",
+            "https://raw.githubusercontent.com/farrokhi/adblock-iran/master/pihole.txt",
+            "https://raw.githubusercontent.com/farrokhi/adblock-iran/master/additional-trackers.txt",
+			"https://raw.githubusercontent.com/shahverd/blocklist/master/shahverd.txt"
+		]
+    },
 	"assets.json": {
 		"content": "internal",
 		"updateAfter": 13,
