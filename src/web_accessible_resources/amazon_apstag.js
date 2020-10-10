@@ -1,7 +1,7 @@
 /*******************************************************************************
 
     uBlock Origin - a browser extension to block requests.
-    Copyright (C) 2018 Raymond Hill
+    Copyright (C) 2019-present Raymond Hill
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,36 +19,24 @@
     Home: https://github.com/gorhill/uBlock
 */
 
-'use strict';
+// https://www.reddit.com/r/uBlockOrigin/comments/ghjqph/
+// https://github.com/NanoMeow/QuickReports/issues/3717
 
-// This file can be replaced by platform-specific code. If a platform is
-// known to NOT support user stylsheets, vAPI.supportsUserStylesheets can be
-// set to `false`.
-
-// Chromium 66 and above supports user stylesheets:
-// https://github.com/gorhill/uBlock/issues/3588
-
-if ( typeof vAPI === 'object' ) {
-    vAPI.supportsUserStylesheets =
-        /\bChrom(?:e|ium)\/(?:5\d|6[012345])\b/.test(navigator.userAgent) === false;
-}
-
-
-
-
-
-
-
-
-/*******************************************************************************
-
-    DO NOT:
-    - Remove the following code
-    - Add code beyond the following code
-    Reason:
-    - https://github.com/gorhill/uBlock/pull/3721
-    - uBO never uses the return value from injected content scripts
-
-**/
-
-void 0;
+(function() {
+    'use strict';
+    const w = window;
+    const noopfn = function() {
+        ; // jshint ignore:line
+    }.bind();
+    const apstag = {
+        fetchBids: function(a, b) {
+            if ( b instanceof Function ) {
+                b([]);
+            }
+        },
+        init: noopfn,
+        setDisplayBids: noopfn,
+        targetingKeys: noopfn,
+    };
+    w.apstag = apstag;
+})();

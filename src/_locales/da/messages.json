@@ -40,7 +40,7 @@
     "description": "appears as tab name in dashboard"
   },
   "whitelistPageName": {
-    "message": "Hvidliste",
+    "message": "Betroede websteder",
     "description": "appears as tab name in dashboard"
   },
   "shortcutsPageName": {
@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} eller {{percent}} %",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "siden installation",
@@ -95,16 +95,28 @@
     "message": "eller",
     "description": "English: or"
   },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Blokeret på denne side",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Blokeret siden installation",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Tilknyttede domæner",
+    "description": "For the new mobile-friendly popup design"
+  },
   "popupTipDashboard": {
     "message": "Åbn kontrolpanelet",
     "description": "English: Click to open the dashboard"
   },
   "popupTipZapper": {
-    "message": "Gå til elementdræbertilstand",
+    "message": "Gå til elementdræber&shy;tilstand",
     "description": "Tooltip for the element-zapper icon in the popup panel"
   },
   "popupTipPicker": {
-    "message": "Start elementvælgertilstand",
+    "message": "Gå til elementvælger&shy;tilstand",
     "description": "English: Enter element picker mode"
   },
   "popupTipLog": {
@@ -167,6 +179,34 @@
     "message": "Klik for ikke længere at deaktivere JavaScript på dette websted",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Popup-vinduer",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Store medieelementer",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Kosmetisk filtrering",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Fjernskrifttyper",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Mere",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Skjul",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Globale regler: Denne kolonne er til regler gældende alle websteder.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} af {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Version",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Opret",
@@ -327,10 +371,6 @@
     "message": "Blokér CSP-rapporter",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Lagerplads forbrugt: {{value}} bytes",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Seneste gendannelse:",
     "description": "English: Last restore:"
@@ -364,7 +404,7 @@
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
-    "message": "<p>Denne indstilling gør det muligt at fortolke og håndhæve <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">Adblock Plus-kompatible &ldquo;elementskjulningsfiltre&rdquo;</a>. Disse filtre er primært kosmetiske med det formål at skjule websideelementer, som vurderes at være visuelt generende og ikke kan blokeres vha. den netanmodningsbaserede filtermotor. </p><p>Denne indstilling øger uBlock₀s hukommelsesforbrug.</p>",
+    "message": "Kosmetiske filtre tjener til at skjule elementer på en webside, der anses for at være visuel generende, og som ikke kan blokeres af den netværksanmodningsbaserede filtreringsmotor.",
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
@@ -372,7 +412,7 @@
     "description": "This will cause uBO to ignore all generic cosmetic filters."
   },
   "3pIgnoreGenericCosmeticFiltersInfo": {
-    "message": "<p>Generiske kosmetiske filtre er de filtre som tiltænkes anvendt for alle websteder.<p>Selvom uBlock₀ håndterer dem effektivt, kan generiskes kosmetiske filtre medføre forøget hukommelse- og CPU-forbrug på visse websider, specielt de store og længe-åbnede ditto.\n<p>Aktiveres funktionen, vil uBlock₀ ikke længere benytte filtrene, hvilket betyder lavere hukommelses- og CPU-forbrug pr. side samt lavere overordnet hukommelsesforbrug.\n<p>Funktionen anbefales aktiveret på mindre kraftfulde enheder.",
+    "message": "Generiske kosmetiske filtre er de kosmetiske filtre, der er beregnet til at gælde på alle websteder. Aktivering af denne indstilling vil eliminere hukommelse- og CPU-forbrug, der tilføjes til websider som et resultat af håndtering af generiske kosmetiske filtre.\n\nDet anbefales at aktivere denne indstilling på mindre kraftfulde enheder.",
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pListsOfBlockedHostsHeader": {
@@ -427,6 +467,10 @@
     "message": "Forældet.",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "vis indhold",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "Seneste opdatering: {{ago}}.\nKlik for at gennemtvinge en opdatering.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -440,7 +484,7 @@
     "description": "used as a tooltip for error icon beside a list"
   },
   "1pFormatHint": {
-    "message": "Ét filter pr. linje. Et filter kan være et almindeligt værtsnavn eller et Adblock Plus-kompatibelt filter. Linjer startende med <code>!</code> ignoreres.",
+    "message": "Ét filter pr. linje. Et filter kan være et almindeligt værtsnavn eller et EasyList-kompatibelt filter. Linjer startende med <code>!</code> ignoreres.",
     "description": "Short information about how to create custom filters"
   },
   "1pImport": {
@@ -507,9 +551,25 @@
     "message": "Regelsyntaks: <code>kilde destination type handling</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>fuld dokumentation</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sortering:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Regeltype",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Kilde",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destination",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "Hvidlistereglerne afgør, på hvilke sider uBlock Origin skal være slået fra. Kun én post pr. linje. Ugyldige regler ignoreres upåagtet og udkommenteres.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "De betroede webstedsdirektiver dikterer, på hvilke websider uBlock Origin skal deaktiveres. Én post pr. linje. Ugyldige direktiver ignoreres og kommenteres ud.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importér og tilføj",
@@ -520,8 +580,8 @@
     "description": "English: Export"
   },
   "whitelistExportFilename": {
-    "message": "min-ublock-whitelist_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "message": "mine-ublock-betroede-websteder_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Effektuér ændringer",
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "Statisk filter <code>{{filter}}</code> ikke fundet i nogen af de aktuelt aktiverede filterlister",
+    "message": "Statisk filter kunne ikke findes i nogen af de aktuelt aktiverede filterlister",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Bidragsydere",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Kildekode",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Oversættelser",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Filterlister",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Eksterne afhængigheder (GPLv3-kompatible):",
     "description": "Shown in the About pane"
@@ -832,8 +904,12 @@
     "description": "English: Network error: {{msg}}"
   },
   "subscriberConfirm": {
-    "message": "uBlock: Føj flg. URL til dine tilpassede filterlister?\n\nTitel: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "message": "Føj følgende URL til dine tilpassede filterlister?\n\nTitel: \"{{title}}\"\nURL: {{url}}",
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Abonnér",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "et minut siden",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origins har blokeret flg. side fra at hente:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Grundet flg. filter",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "uden parametre",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Lemp blokeringstilstand",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Lagerplads brugt: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Denne post skal være den sidste",

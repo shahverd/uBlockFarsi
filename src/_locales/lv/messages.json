@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} vai {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "kopš instalācijas brīža",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "vai",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Bloķētas šajā lapā",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Bloķētas kopā",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Domains connected",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Atvērt vadības paneli",
@@ -167,6 +179,34 @@
     "message": "Click to no longer disable JavaScript on this site",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Pop-up windows",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Large media elements",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Cosmetic filtering",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Remote fonts",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Vairāk",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Mazāk",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Globālie ierobežojumi: šī kolonna paredzēta ierobežojumiem, kas attieksies uz visām mājaslapām.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} no {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Versija",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Izveidot",
@@ -327,10 +371,6 @@
     "message": "Bloķēt CSP atskaites",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Izmantotais krātuves lielums: {{value}} baiti",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Pēdējā atjaunošana veikta:",
     "description": "English: Last restore:"
@@ -427,6 +467,10 @@
     "message": "Novecojis.",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "view content",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "Pēdējo reizi atjaunināts: {{ago}}.\nNoklikšķiniet, lai atjauninātu.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -507,9 +551,25 @@
     "message": "Noteikumu sintakse: <code>avots mērķis tips rīcība</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>pilna dokumentācija</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sort:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Rule type",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Source",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destination",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
     "message": "Saraksts ar interneta resursiem, kuriem tiks atslēgts uBlock Origin. Viens ieraksts katrā rindiņā. Nederīgi interneta resursu nosaukumi tiks ignorēti bez brīdinājuma.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importēt un pievienot",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "my-ublock-whitelist_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Lietot izmaiņas",
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "Static filter <code>{{filter}}</code> could not be found in any of the currently enabled filter lists",
+    "message": "Static filter could not be found in any of the currently enabled filter lists",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Atbalstītāji",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Pirmkods",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Tulkojumi",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Filtru saraksti",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "External dependencies (GPLv3-compatible):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: Pievienot sekojošo URL Jūsu lietotāja filtru sarakstiem?\n\nNosaukums: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Subscribe",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "pirms minūtes",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock₀ novērsa šo lapu no ielādes:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Sakarā ar šādu filtru",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "bez parametriem",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Relax blocking mode",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Storage used: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Šim ierakstam ir jābūt pēdējam",

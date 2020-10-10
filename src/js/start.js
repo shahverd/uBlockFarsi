@@ -52,55 +52,50 @@ vAPI.app.onShutdown = function() {
 // the extension was launched. It can be used to inject content scripts
 // in already opened web pages, to remove whatever nuisance could make it to
 // the web pages before uBlock was ready.
+//
+// https://bugzilla.mozilla.org/show_bug.cgi?id=1652925#c19
+//   Mind discarded tabs.
 
 const initializeTabs = async function() {
     const manifest = browser.runtime.getManifest();
     if ( manifest instanceof Object === false ) { return; }
 
-    const tabs = await vAPI.tabs.query({ url: '<all_urls>' });
     const toCheck = [];
-    const checker = {
-        file: 'js/scriptlets/should-inject-contentscript.js'
-    };
-    for ( const tab of tabs  ) {
-        µb.tabContextManager.commit(tab.id, tab.url);
-        µb.bindTabToPageStats(tab.id);
-        // https://github.com/chrisaljoudi/uBlock/issues/129
-        //   Find out whether content scripts need to be injected
-        //   programmatically. This may be necessary for web pages which
-        //   were loaded before uBO launched.
-        toCheck.push(
-            /^https?:\/\//.test(tab.url)
-                ? vAPI.tabs.executeScript(tab.id, checker)
-                : false
-        );
+    const tabIds = [];
+    {
+        const checker = { file: 'js/scriptlets/should-inject-contentscript.js' };
+        const tabs = await vAPI.tabs.query({ url: '<all_urls>' });
+        for ( const tab of tabs  ) {
+            if ( tab.discarded === true ) { continue; }
+            const { id, url } = tab;
+            µb.tabContextManager.commit(id, url);
+            µb.bindTabToPageStats(id);
+            // https://github.com/chrisaljoudi/uBlock/issues/129
+            //   Find out whether content scripts need to be injected
+            //   programmatically. This may be necessary for web pages which
+            //   were loaded before uBO launched.
+            toCheck.push(
+                /^https?:\/\//.test(url)
+                    ? vAPI.tabs.executeScript(id, checker) 
+                    : false
+            );
+            tabIds.push(id);
+        }
     }
     const results = await Promise.all(toCheck);
     for ( let i = 0; i < results.length; i++ ) {
         const result = results[i];
         if ( result.length === 0 || result[0] !== true ) { continue; }
-        // Inject dclarative content scripts programmatically.
-        const tabId = tabs[i].id;
+        // Inject declarative content scripts programmatically.
         for ( const contentScript of manifest.content_scripts ) {
             for ( const file of contentScript.js ) {
-                vAPI.tabs.executeScript(tabId, {
+                vAPI.tabs.executeScript(tabIds[i], {
                     file: file,
                     allFrames: contentScript.all_frames,
                     runAt: contentScript.run_at
                 });
             }
         }
-    }
-};
-
-/******************************************************************************/
-
-const onCommandShortcutsReady = function(commandShortcuts) {
-    if ( Array.isArray(commandShortcuts) === false ) { return; }
-    µb.commandShortcuts = new Map(commandShortcuts);
-    if ( µb.canUpdateShortcuts === false ) { return; }
-    for ( const entry of commandShortcuts ) {
-        vAPI.commands.update({ name: entry[0], shortcut: entry[1] });
     }
 };
 
@@ -123,6 +118,24 @@ const onVersionReady = function(lastVersion) {
         µb.sessionSwitches.toggle('no-scripting', 'behind-the-scene', 0);
         µb.permanentSwitches.toggle('no-scripting', 'behind-the-scene', 0);
         µb.saveHostnameSwitches();
+    }
+
+    // Configure new popup panel according to classic popup panel
+    // configuration.
+    if ( lastVersionInt !== 0 ) {
+        if ( lastVersionInt <= 1026003014 ) {
+            µb.userSettings.popupPanelSections =
+                µb.userSettings.dynamicFilteringEnabled === true ? 0b11111 : 0b01111;
+            µb.userSettings.dynamicFilteringEnabled = undefined;
+            µb.saveUserSettings();
+        } else if (
+            lastVersionInt <= 1026003016 &&
+            (µb.userSettings.popupPanelSections & 1) !== 0
+        ) {
+            µb.userSettings.popupPanelSections =
+                (µb.userSettings.popupPanelSections << 1 | 1) & 0b111111;
+            µb.saveUserSettings();
+        }
     }
 
     vAPI.storage.set({ version: vAPI.app.version });
@@ -204,7 +217,6 @@ const onFirstFetchReady = function(fetched) {
     fromFetch(µb.restoreBackupSettings, fetched);
     onNetWhitelistReady(fetched.netWhitelist);
     onVersionReady(fetched.version);
-    onCommandShortcutsReady(fetched.commandShortcuts);
 };
 
 /******************************************************************************/
@@ -226,7 +238,6 @@ const fromFetch = function(to, fetched) {
 
 const createDefaultProps = function() {
     const fetchableProps = {
-        'commandShortcuts': [],
         'dynamicFilteringString': [
             'behind-the-scene * * noop',
             'behind-the-scene * image noop',
@@ -263,6 +274,19 @@ try {
     await µb.loadHiddenSettings();
     log.info(`Hidden settings ready ${Date.now()-vAPI.T0} ms after launch`);
 
+    // Maybe override current network listener suspend state
+    if ( µb.hiddenSettings.suspendTabsUntilReady === 'no' ) {
+        vAPI.net.unsuspend(true);
+    } else if ( µb.hiddenSettings.suspendTabsUntilReady === 'yes' ) {
+        vAPI.net.suspend();
+    }
+
+    if ( µb.hiddenSettings.disableWebAssembly !== true ) {
+        µb.staticNetFilteringEngine.enableWASM().then(( ) => {
+            log.info(`WASM modules ready ${Date.now()-vAPI.T0} ms after launch`);
+        });
+    }
+
     const cacheBackend = await µb.cacheStorage.select(
         µb.hiddenSettings.cacheStorageAPI
     );
@@ -290,6 +314,9 @@ try {
     console.trace(ex);
 }
 
+// Prime the filtering engines before first use.
+µb.staticNetFilteringEngine.prime();
+
 // https://github.com/uBlockOrigin/uBlock-issues/issues/817#issuecomment-565730122
 //   Still try to load filter lists regardless of whether a serious error
 //   occurred in the previous initialization steps.
@@ -312,6 +339,10 @@ if ( selfieIsValid !== true ) {
 }
 
 // Final initialization steps after all needed assets are in memory.
+
+// https://github.com/uBlockOrigin/uBlock-issues/issues/974
+//   This can be used to defer filtering decision-making.
+µb.readyToFilter = true;
 
 // Start network observers.
 µb.webRequest.start();
@@ -345,19 +376,16 @@ if (
     browser.browserAction instanceof Object &&
     browser.browserAction.setPopup instanceof Function
 ) {
-    let uiFlavor = µb.hiddenSettings.uiFlavor;
+    const env = vAPI.webextFlavor;
     if (
-        uiFlavor === 'unset' &&
-        vAPI.webextFlavor.major > 68 &&
-        vAPI.webextFlavor.soup.has('firefox') &&
-        vAPI.webextFlavor.soup.has('mobile')
+        µb.hiddenSettings.uiFlavor === 'classic' || (
+            µb.hiddenSettings.uiFlavor === 'unset' && (
+                env.soup.has('chromium') && env.major < 66 ||
+                env.soup.has('firefox') && env.major < 68
+            )
+        )
     ) {
-        uiFlavor = 'fenix';
-    }
-    if ( uiFlavor !== 'unset' && /\w+/.test(uiFlavor) ) {
-        browser.browserAction.setPopup({
-            popup: vAPI.getURL(`popup-${uiFlavor}.html`)
-        });
+        browser.browserAction.setPopup({ popup: 'popup.html' });
     }
 }
 

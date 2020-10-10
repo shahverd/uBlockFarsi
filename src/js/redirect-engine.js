@@ -59,17 +59,16 @@ const redirectableResources = new Map([
     [ 'amazon_ads.js', {
         alias: 'amazon-adsystem.com/aax2/amzn_ads.js',
     } ],
+    [ 'amazon_apstag.js', {
+    } ],
     [ 'ampproject_v0.js', {
         alias: 'ampproject.org/v0.js',
     } ],
     [ 'chartbeat.js', {
         alias: 'static.chartbeat.com/chartbeat.js',
     } ],
-    [ 'disqus_embed.js', {
-        alias: 'disqus.com/embed.js',
-    } ],
-    [ 'disqus_forums_embed.js', {
-        alias: 'disqus.com/forums/*/embed.js',
+    [ 'click2load.html', {
+        params: [ 'url' ],
     } ],
     [ 'doubleclick_instream_ad_status.js', {
         alias: 'doubleclick.net/instream/ad_status.js',
@@ -154,6 +153,7 @@ const redirectableResources = new Map([
         alias: 'scorecardresearch.com/beacon.js',
     } ],
     [ 'window.open-defuser.js', {
+        alias: 'nowoif.js',
         data: 'text',
     } ],
 ]);
@@ -194,6 +194,7 @@ const RedirectEntry = class {
         this.mime = '';
         this.data = '';
         this.warURL = undefined;
+        this.params = undefined;
     }
 
     // Prevent redirection to web accessible resources when the request is
@@ -211,7 +212,15 @@ const RedirectEntry = class {
             fctxt instanceof Object &&
             fctxt.type !== 'xmlhttprequest'
         ) {
-            return `${this.warURL}${vAPI.warSecret()}`;
+            let url = `${this.warURL}${vAPI.warSecret()}`;
+            if ( this.params !== undefined ) {
+                for ( const name of this.params ) {
+                    const value = fctxt[name];
+                    if ( value === undefined ) { continue; }
+                    url += `&${name}=${encodeURIComponent(value)}`;
+                }
+            }
+            return url;
         }
         if ( this.data === undefined ) { return; }
         // https://github.com/uBlockOrigin/uBlock-issues/issues/701
@@ -254,6 +263,7 @@ const RedirectEntry = class {
         r.mime = selfie.mime;
         r.data = selfie.data;
         r.warURL = selfie.warURL;
+        r.params = selfie.params;
         return r;
     }
 };
@@ -457,7 +467,7 @@ RedirectEngine.prototype.compileRuleFromStaticFilter = function(line) {
     let type,
         redirect = '',
         srchns = [];
-    for ( const option of matches[3].split(',') ) {
+    for ( const option of matches[3].trim().split(/,/) ) {
         if ( option.startsWith('redirect=') ) {
             redirect = option.slice(9);
             continue;
@@ -526,7 +536,7 @@ RedirectEngine.prototype.compileRuleFromStaticFilter = function(line) {
 
 /******************************************************************************/
 
-RedirectEngine.prototype.reFilterParser = /^(?:\|\|([^\/:?#^]+)|\*)([^$]+)?\$([^$]+)$/;
+RedirectEngine.prototype.reFilterParser = /^(?:\|\|([^\/:?#^]+)|\*?)([^$]+)?\$([^$]+)$/;
 
 RedirectEngine.prototype.supportedTypes = new Map([
     [ 'css', 'stylesheet' ],
@@ -724,6 +734,7 @@ RedirectEngine.prototype.loadBuiltinResources = function() {
             mime: mimeFromName(name),
             data,
             warURL: vAPI.getURL(`/web_accessible_resources/${name}`),
+            params: details.params,
         });
         this.resources.set(name, entry);
         if ( details.alias !== undefined ) {
@@ -775,6 +786,29 @@ RedirectEngine.prototype.loadBuiltinResources = function() {
 
     return Promise.all(fetches);
 }; 
+
+/******************************************************************************/
+
+RedirectEngine.prototype.getResourceDetails = function() {
+    const out = new Map();
+    for ( const [ name, entry ] of this.resources ) {
+        out.set(name, {
+            canInject: typeof entry.data === 'string',
+            canRedirect: entry.warURL !== undefined,
+            aliasOf: '',
+        });
+    }
+    for ( const [ alias, name ] of this.aliases ) {
+        const original = out.get(name);
+        if ( original === undefined ) { continue; }
+        const aliased = Object.assign({}, original);
+        aliased.aliasOf = name;
+        out.set(alias, aliased);
+    }
+    return Array.from(out).sort((a, b) => {
+        return a[0].localeCompare(b[0]);
+    });
+};
 
 /******************************************************************************/
 

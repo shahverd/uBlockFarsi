@@ -30,7 +30,6 @@
 
 if (
     typeof vAPI !== 'object' ||
-    vAPI.domFilterer instanceof Object === false ||
     vAPI.domWatcher instanceof Object === false
 ) {
     return;
@@ -147,10 +146,10 @@ const processDeclarativeStyle = function(out) {
 
 const processProcedural = function(out) {
     if ( proceduralDict.size === 0 ) { return; }
-    for ( const entry of proceduralDict ) {
-        if ( entry[1].test() === false ) { continue; }
-        out.push(`##${entry[1].raw}`);
-        proceduralDict.delete(entry[0]);
+    for ( const [ raw, pselector ] of proceduralDict ) {
+        if ( pselector.hit === false ) { continue; }
+        out.push(`##${raw}`);
+        proceduralDict.delete(raw);
     }
 };
 
@@ -211,10 +210,12 @@ const processTimer = new vAPI.SafeAnimationFrame(( ) => {
 
     if ( toLog.length === 0 ) { return; }
 
+    const location = vAPI.effectiveSelf.location;
+
     vAPI.messaging.send('scriptlets', {
         what: 'logCosmeticFilteringData',
-        frameURL: window.location.href,
-        frameHostname: window.location.hostname,
+        frameURL: location.href,
+        frameHostname: location.hostname,
         matchedSelectors: toLog,
     });
     //console.timeEnd('dom logger/scanning for matches');
@@ -277,8 +278,12 @@ const handlers = {
                     continue;
                 }
                 const details = JSON.parse(selector);
-                if ( Array.isArray(details.style) ) {
-                    exceptionDict.set(details.style[0], details.raw);
+                if (
+                    details.action !== undefined &&
+                    details.tasks === undefined &&
+                    details.action[0] === ':style'
+                ) {
+                    exceptionDict.set(details.selector, details.raw);
                     continue;
                 }
                 proceduralExceptionDict.set(
@@ -295,6 +300,9 @@ const handlers = {
     },
 
     onDOMCreated: function() {
+        if ( vAPI.domFilterer instanceof Object === false ) {
+            return shutdown();
+        }
         handlers.onFiltersetChanged(vAPI.domFilterer.getAllSelectors());
         vAPI.domFilterer.addListener(handlers);
         attributeObserver.observe(document.body, {
@@ -317,17 +325,35 @@ const handlers = {
 
 /******************************************************************************/
 
+const shutdown = function() {
+    processTimer.clear();
+    attributeObserver.disconnect();
+    if ( typeof vAPI !== 'object' ) { return; }
+    if ( vAPI.domFilterer instanceof Object ) {
+        vAPI.domFilterer.removeListener(handlers);
+    }
+    if ( vAPI.domWatcher instanceof Object ) {
+        vAPI.domWatcher.removeListener(handlers);
+    }
+    if ( vAPI.broadcastListener instanceof Object ) {
+        vAPI.broadcastListener.remove(broadcastListener);
+    }
+};
+
+/******************************************************************************/
+
+const broadcastListener = msg => {
+    if ( msg.what === 'loggerDisabled' ) {
+        shutdown();
+    }
+};
+
+/******************************************************************************/
+
 vAPI.messaging.extend().then(extended => {
-    if ( extended !== true ) { return; }
-    const broadcastListener = msg => {
-        if ( msg.what === 'loggerDisabled' ) {
-            processTimer.clear();
-            attributeObserver.disconnect();
-            vAPI.domFilterer.removeListener(handlers);
-            vAPI.domWatcher.removeListener(handlers);
-            vAPI.broadcastListener.remove(broadcastListener);
-        }
-    };
+    if ( extended !== true ) {
+        return shutdown();
+    }
     vAPI.broadcastListener.add(broadcastListener);
 });
 

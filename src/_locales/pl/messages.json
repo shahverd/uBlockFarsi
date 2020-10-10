@@ -40,7 +40,7 @@
     "description": "appears as tab name in dashboard"
   },
   "whitelistPageName": {
-    "message": "Biała lista",
+    "message": "Zaufane witryny",
     "description": "appears as tab name in dashboard"
   },
   "shortcutsPageName": {
@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} ({{percent}}%)",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "od instalacji",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "lub",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Zablokowane na tej stronie",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Zablokowane od instalacji",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Domeny podłączone",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Otwórz panel sterowania",
@@ -167,6 +179,34 @@
     "message": "Kliknij, aby JavaScript nie był już wyłączony na tej witrynie",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Wyskakujące okna",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Duże elementy multimedialne",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Filtrowanie kosmetyczne",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Zdalne czcionki",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Więcej",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Mniej",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Reguły globalne. W tej kolumnie znajdują się reguły stosowane na wszystkich witrynach.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} z {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Wersja",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Utwórz",
@@ -327,10 +371,6 @@
     "message": "Blokuj raporty CSP",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Użycie pamięci masowej: {{value}} bajtów",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Ostatnie przywrócenie wykonano:",
     "description": "English: Last restore:"
@@ -364,7 +404,7 @@
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
-    "message": "<p>Włączenie tej funkcji skutkuje przetwarzaniem i używaniem <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">filtrów kompatybilnych z dodatkiem Adblock Plus służących do ukrywania elementów</a>. Są to filtry kosmetyczne i służą do ukrycia elementów uważanych za wizualnie uciążliwe, których nie można zablokować przez filtry sieciowe.</p><p>Włączenie tej funkcji powoduje zwiększenie użycia pamięci przez uBlock₀.</p>",
+    "message": "Filtry kosmetyczne służą do ukrywania elementów stron internetowych uważanych za wizualne uciążliwe, które to nie mogą zostać zablokowane za pomocą filtrów żądań sieciowych.",
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
@@ -372,7 +412,7 @@
     "description": "This will cause uBO to ignore all generic cosmetic filters."
   },
   "3pIgnoreGenericCosmeticFiltersInfo": {
-    "message": "<p>Ogólne filtry kosmetyczne, to filtry które mają być zastosowane na wszystkich stronach internetowych.<p>Choć dobrze obsługiwane przez uBlock₀ mogą na niektórych stronach, szczególnie dużych i otwartych przez dłuższy czas, przyczyniać się do obciążenia procesora i pamięci operacyjnej.<p>Włącznie tej funkcji wyeliminuje obciążenie procesora i pamięci operacyjnej powodowane stosowaniem ogólnych filtrów kosmetycznych, a także zmniejszy zapotrzebowanie na pamięć samego uBlocka₀.<p>Zaleca się włączenie tej funkcji na mniej wydajnych urządzeniach.",
+    "message": "Ogólne filtry kosmetyczne, to filtry które mają być zastosowane na wszystkich stronach internetowych. Włącznie tej funkcji zmniejszy obciążenie procesora i pamięci.\n\nZaleca się włączenie tej funkcji na mniej wydajnych urządzeniach.",
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pListsOfBlockedHostsHeader": {
@@ -427,6 +467,10 @@
     "message": "Nieaktualna.",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "zobacz zawartość",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "Zaktualizowano: {{ago}}.\nKliknij, aby wymusić aktualizację.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -440,7 +484,7 @@
     "description": "used as a tooltip for error icon beside a list"
   },
   "1pFormatHint": {
-    "message": "Jeden filtr na linię. Filtrem może być nazwa hosta lub filtr kompatybilny z dodatkiem Adblock Plus. Wiersze poprzedzone <code>!</code> będą pomijane.",
+    "message": "W wierszu może być tylko jeden filtr. Filtrem może być nazwa hosta lub filtr kompatybilny z EasyList. Wiersze poprzedzone znakiem <code>!</code> będą pomijane.",
     "description": "Short information about how to create custom filters"
   },
   "1pImport": {
@@ -507,9 +551,25 @@
     "message": "Składnia reguły: <code>źródło cel typ akcja</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>pełna dokumentacja</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sortowanie:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Typ reguły",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Źródło",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Miejsce docelowe",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "Dyrektywy białej listy wskazują, na których stronach uBlock Origin powinien zostać wyłączony. Jeden wpis na linię. Nieprawidłowe wpisy zostaną bez powiadomienia zignorowane i wykomentowane.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "Wytyczne zaufanych witryn nakazują, na których stronach uBlock Origin powinien zostać wyłączony. Jeden wpis na linię. Nieprawidłowe linie zostaną bez powiadomienia zignorowane i wykomentowane.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importuj i dołącz",
@@ -520,8 +580,8 @@
     "description": "English: Export"
   },
   "whitelistExportFilename": {
-    "message": "ublock-biała-lista_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "message": "ublock-zaufane-witryny_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Zastosuj zmiany",
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "Filtr statyczny <code>{{filter}}</code> nie został znaleziony w aktualnie włączonych listach filtrów",
+    "message": "Filtr statyczny nie został znaleziony w aktualnie włączonych listach filtrów",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Współtwórcy",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Kod źródłowy",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Tłumaczenia",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Listy filtrów",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Zewnętrzne zależności (kompatybilne z GPLv3):",
     "description": "Shown in the About pane"
@@ -832,8 +904,12 @@
     "description": "English: Network error: {{msg}}"
   },
   "subscriberConfirm": {
-    "message": "uBlock₀: Dodać następujący URL do twojej listy filtrów?\n\nTytuł: \"{{title}}\"\nAdres: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "message": "Dodać następujący URL do twoich list filtrów?\n\nTytuł: \"{{title}}\"\nURL: {{url}}",
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Subskrybuj",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "minutę temu",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin zablokował wczytywanie następującej strony:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Powodem zablokowania jest filtr",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "bez parametrów",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Rozluźnij tryb blokowania",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Użycie pamięci masowej: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Ten wpis musi być ostatni",

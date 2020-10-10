@@ -1263,13 +1263,16 @@ const reloadTab = function(ev) {
             // Avoid duplicates
             if ( createdStaticFilters.hasOwnProperty(value) ) { return; }
             createdStaticFilters[value] = true;
+            // https://github.com/uBlockOrigin/uBlock-issues/issues/1281#issuecomment-704217175
+            // TODO:
+            //   Figure a way to use the actual document URL. Currently using
+            //   a synthetic URL derived from the document hostname.
             if ( value !== '' ) {
                 messaging.send('loggerUI', {
                     what: 'createUserFilter',
                     autoComment: true,
                     filters: value,
-                    origin: targetPageDomain,
-                    pageDomain: targetPageDomain,
+                    docURL: `https://${targetFrameHostname}/`,
                 });
             }
             updateWidgets();
@@ -1872,8 +1875,6 @@ const reloadTab = function(ev) {
     );
 })();
 
-// https://www.youtube.com/watch?v=XyNYrmmdUd4
-
 /******************************************************************************/
 /******************************************************************************/
 
@@ -2323,7 +2324,7 @@ const popupManager = (( ) => {
 
     const setTabId = function(tabId) {
         if ( popup === null ) { return; }
-        popup.setAttribute('src', 'popup.html?tabId=' + tabId);
+        popup.setAttribute('src', 'popup-fenix.html?portrait=1&tabId=' + tabId);
     };
 
     const onTabIdChanged = function() {
@@ -2675,9 +2676,9 @@ const loggerSettings = (( ) => {
         linesPerEntry: 4,
     };
 
-    {
+    vAPI.localStorage.getItemAsync('loggerSettings').then(value => {
         try {
-            const stored = JSON.parse(vAPI.localStorage.getItem('loggerSettings'));
+            const stored = JSON.parse(value);
             if ( typeof stored.discard.maxAge === 'number' ) {
                 settings.discard.maxAge = stored.discard.maxAge;
             }
@@ -2695,7 +2696,7 @@ const loggerSettings = (( ) => {
             }
         } catch(ex) {
         }
-    }
+    });
 
     const valueFromInput = function(input, def) {
         let value = parseInt(input.value, 10);
@@ -2787,7 +2788,7 @@ logger.resize = (function() {
             const crect = elem.getBoundingClientRect();
             const dh = crect.bottom - vrect.bottom;
             if ( dh === 0 ) { continue; }
-            elem.style.height = (crect.height - dh) + 'px';
+            elem.style.height = Math.ceil(crect.height - dh) + 'px';
         }
     };
 

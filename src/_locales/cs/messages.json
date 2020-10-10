@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} neboli {{percent}} %",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "od instalace",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "neboli",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Zablokováno na této stránce",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Zablokováno od instalace",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Počet připojených domén",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Otevřít ovládací panel",
@@ -167,6 +179,34 @@
     "message": "Kliknutím znovu povolíte JavaScript na této stránce",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Vyskakovací okna",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Velké multimediální prvky",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Kosmetické filtrování",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Vzdálená písma",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Více",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Méně",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Globální pravidla: tento sloupec slouží pro pravidla, která platí pro všechny weby.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} z {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Verze",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Vytvořit",
@@ -327,10 +371,6 @@
     "message": "Blokovat CSP reporty",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Prostoru využito: {{value}} bajtů",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Poslední obnova:",
     "description": "English: Last restore:"
@@ -364,7 +404,7 @@
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
-    "message": "<p>Tímto povolíte zpracovávání a používání <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">&ldquo;element hiding&rdquo; filtrů kompatibilních s Adblockem Plus</a>. Tyto filtry jsou převážně kosmetické. Skrývají prvky webových stránek, které jsou vizuálně na obtíž a nemohou být zablokovány síťovým požadavkem.</p><p>Povolení této funkce zvětšuje stopy uBlocku₀ v paměti.</p>",
+    "message": "<p>Tímto povolíte zpracovávání a používání <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">&ldquo;element hiding&rdquo; filtrů kompatibilních s Adblockem Plus</a>. Tyto filtry jsou převážně kosmetické. Skrývají prvky webových stránek, které jsou vizuálně na obtíž a nemohou být zablokovány síťovým požadavkem.</p><p>Povolení této funkce zvětšuje spotřebu paměti uBlocku₀.</p>",
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
@@ -426,6 +466,10 @@
   "3pExternalListObsolete": {
     "message": "Zastaralé.",
     "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "Zobrazit obsah",
+    "description": "used as a tooltip for eye icon beside a list"
   },
   "3pLastUpdate": {
     "message": "Poslední aktualizace: {{ago}}.\nKliknutím vynutíte aktualizaci.",
@@ -507,9 +551,25 @@
     "message": "Syntaxe pravidel: <code>zdroj destinace typ akce</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>kompletní dokumentace</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sort:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Rule type",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Source",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destination",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "Pokyny whitelistu určují, pro které webové stránky bude uBlock Origin zakázán. Jedna položka na řádek. Neplatné pokyny budou tiše ignorovány a zakomentovány.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "Pravidla v seznamu povolených domén určují, pro které webové stránky bude uBlock Origin vypnutý. Jedna položka na řádek. Neplatná pravidla budou tiše ignorována a zakomentována.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importovat a připojit",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "ublock-muj-whitelist_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Použít změny",
@@ -795,6 +855,18 @@
     "message": "Přispěvatelé",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Zdrojový kód",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Překlady",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Seznam filtrů",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Externí závislosti (kompatibilní s GPLv3):",
     "description": "Shown in the About pane"
@@ -832,8 +904,12 @@
     "description": "English: Network error: {{msg}}"
   },
   "subscriberConfirm": {
-    "message": "uBlock₀: Přidat následující URL adresu do seznamů vlastních filtrů?\n\nNázev: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "message": "uBlock₀: Přidat následující URL adresu do seznamů vlastních filtrů?\n\nNázev: „{{title}}“\nURL: {{url}}",
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Odebírat",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "před minutou",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin zabránil následující stránce v načtení:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Kvůli následujícímu filtru",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "bez parametrů",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Uvolnit režim blokování",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Využití úložiště: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "This entry must be the last one",

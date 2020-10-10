@@ -25,19 +25,10 @@
 
 /******************************************************************************/
 
-(( ) => {
+{
+// >>>>> start of local scope
 
 /******************************************************************************/
-
-const resizeFrame = function() {
-    const navRect = document.getElementById('dashboard-nav')
-                            .getBoundingClientRect();
-    const viewRect = document.documentElement.getBoundingClientRect();
-    document.getElementById('iframe').style.setProperty(
-        'height',
-        (viewRect.height - navRect.height) + 'px'
-    );
-};
 
 const discardUnsavedData = function(synchronous = false) {
     const paneFrame = document.getElementById('iframe');
@@ -82,22 +73,22 @@ const discardUnsavedData = function(synchronous = false) {
     });
 };
 
-const loadDashboardPanel = function(pane = '') {
-    if ( pane === '' ) {
-        pane = vAPI.localStorage.getItem('dashboardLastVisitedPane');
-        if ( pane === null ) {
-             pane = 'settings.html';
-        }
+const loadDashboardPanel = function(pane, first) {
+    const tabButton = uDom.nodeFromSelector(`[data-pane="${pane}"]`);
+    if ( tabButton === null || tabButton.classList.contains('selected') ) {
+        return;
     }
-    const tabButton = uDom(`[href="#${pane}"]`);
-    if ( !tabButton || tabButton.hasClass('selected') ) { return; }
     const loadPane = ( ) => {
         self.location.replace(`#${pane}`);
         uDom('.tabButton.selected').toggleClass('selected', false);
-        tabButton.toggleClass('selected', true);
+        tabButton.classList.add('selected');
+        tabButton.scrollIntoView();
         uDom.nodeFromId('iframe').setAttribute('src', pane);
         vAPI.localStorage.setItem('dashboardLastVisitedPane', pane);
     };
+    if ( first ) {
+        return loadPane();
+    }
     const r = discardUnsavedData();
     if ( r === false ) { return; }
     if ( r === true ) {
@@ -110,8 +101,7 @@ const loadDashboardPanel = function(pane = '') {
 };
 
 const onTabClickHandler = function(ev) {
-    loadDashboardPanel(ev.target.hash.slice(1));
-    ev.preventDefault();
+    loadDashboardPanel(ev.target.getAttribute('data-pane'));
 };
 
 // https://github.com/uBlockOrigin/uBlock-issues/issues/106
@@ -121,19 +111,20 @@ vAPI.messaging.send('dashboard', {
     document.body.classList.toggle('canUpdateShortcuts', response === true);
 });
 
-resizeFrame();
-loadDashboardPanel();
+vAPI.localStorage.getItemAsync('dashboardLastVisitedPane').then(value => {
+    loadDashboardPanel(value !== null ? value : 'settings.html', true);
 
-window.addEventListener('resize', resizeFrame);
-uDom('.tabButton').on('click', onTabClickHandler);
+    uDom('.tabButton').on('click', onTabClickHandler);
 
-// https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-window.addEventListener('beforeunload', ( ) => {
-    if ( discardUnsavedData(true) ) { return; }
-    event.preventDefault();
-    event.returnValue = '';
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+    window.addEventListener('beforeunload', ( ) => {
+        if ( discardUnsavedData(true) ) { return; }
+        event.preventDefault();
+        event.returnValue = '';
+    });
 });
 
 /******************************************************************************/
 
-})();
+// <<<<< end of local scope
+}

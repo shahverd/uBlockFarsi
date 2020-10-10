@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} o {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "des de la instal·lació",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "o",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Blocat en aquesta pàgina",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Blocat des de la instal·lació",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Dominis connectats",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Clic per obrir el tauler de control",
@@ -167,6 +179,34 @@
     "message": "Feu clic per no inhabilitar el JavaScript en aquest lloc",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Finestres emergents",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Elements multimèdia grans",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Filtres cosmètics",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Fonts remotes",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Més",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Menys",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Regles globals: les regles d'aquesta columna s'apliquen a tots els llocs.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} de {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Versió",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Crear",
@@ -327,10 +371,6 @@
     "message": "Bloca els informes CSP",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Emmagatzematge utilitzat: {{value}} bytes",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Darrera restauració:",
     "description": "English: Last restore:"
@@ -364,7 +404,7 @@
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
-    "message": "<p>Aquesta opció permet l'anàlisi i l'aplicació dels <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">filtres compatibles amb l'Adblock Plus &ldquo;element hiding&rdquo;</a>. Aquests filtres són principalment cosmètics, que serveixen per amagar elements d'una pàgina web molestos que per defecte no es poden amagar.</p><p>Habilitant aquesta opció augmentarà el consum de memòria de l'uBlock₀.</p>",
+    "message": "<p>Aquesta opció permet l'anàlisi i l'aplicació dels <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">filtres compatibles amb l'Adblock Plus &ldquo;element hiding&rdquo;</a>. Aquests filtres són principalment cosmètics, que serveixen per amagar elements d'una pàgina web molestos que per defecte no es poden amagar.</p><p>Habilitant aquesta opció augmentarà el consum de memòria de l'<i>µBlock</i>.</p>",
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
@@ -426,6 +466,10 @@
   "3pExternalListObsolete": {
     "message": "Obsolet",
     "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "mostra el contingut",
+    "description": "used as a tooltip for eye icon beside a list"
   },
   "3pLastUpdate": {
     "message": "Darrera actualització: {{ago}}",
@@ -507,9 +551,25 @@
     "message": "Sintaxi de les regles: <code>origen destinació tipus acció</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>documentació</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Ordena:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Tipus de regla",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Origen",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destinació",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
     "message": "Llistat dels noms de servidor amb que s'inhabilitarà l'µBlock. Una entrada per línia. S'ignoraran els noms de servidor no vàlids.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Imporar i annexar",
@@ -520,8 +580,8 @@
     "description": "English: Export"
   },
   "whitelistExportFilename": {
-    "message": "ublock-whitelist_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "message": "Llista-blanca-de-l'ublock_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Aplicar canvis",
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "No s'ha trobat el filtre estàtic <code>{{filter}}</code> a cap de les llistes de filtres actualment habilitades",
+    "message": "No s'ha pogut trobar el filtre estàtic <code>{{filter}}</code> en cap de les llistes de filtres actualment activades",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Col·laboradors",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Codi font",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Traduccions",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Llistat de filtres",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Dependències externes (compatibles amb GPLv3):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: Voleu afegir aquesta URL a la llista de filtres personalitzats?\n\nTítol: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Subscriu-me",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "fa un minut",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "L'uBlock Origin ha impedit que es carregui la pàgina:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Detectat per aquest filtre",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "sense paràmetres",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Mode de bloqueig relaxat",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Emmagatzematge utilitzat: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Aquesta entrada ha de ser l'última",

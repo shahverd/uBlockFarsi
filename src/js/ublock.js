@@ -331,7 +331,7 @@ const matchBucket = function(url, hostname, bucket, start) {
     switch ( name ) {
     case 'advancedUserEnabled':
         if ( value === true ) {
-            us.dynamicFilteringEnabled = true;
+            us.popupPanelSections |= 0b11111;
         }
         break;
     case 'autoUpdate':
@@ -428,7 +428,7 @@ const matchBucket = function(url, hostname, bucket, start) {
     });
 
     await vAPI.tabs.executeScript(tabId, {
-        file: '/js/scriptlets/element-picker.js',
+        file: '/js/scriptlets/epicker.js',
         runAt: 'document_end',
     });
 
@@ -634,7 +634,8 @@ const matchBucket = function(url, hostname, bucket, start) {
     vAPI.tabs.executeScript(tabId, {
         file: '/js/scriptlets/cosmetic-logger.js',
         frameId: frameId,
-        runAt: 'document_start'
+        matchAboutBlank: true,
+        runAt: 'document_start',
     });
 };
 

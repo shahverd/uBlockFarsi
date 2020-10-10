@@ -54,18 +54,21 @@ const NetFilteringResultCache = class {
         return this;
     }
 
+    // https://github.com/gorhill/uBlock/issues/3619
+    //   Don't collapse redirected resources
     rememberResult(fctxt, result) {
         if ( fctxt.tabId <= 0 ) { return; }
         if ( this.results.size === 0 ) {
             this.pruneAsync();
         }
-        const key = fctxt.getDocHostname() + ' ' + fctxt.type + ' ' + fctxt.url;
+        const key = `${fctxt.getDocHostname()} ${fctxt.type} ${fctxt.url}`;
         this.results.set(key, {
-            result: result,
+            result,
+            redirectURL: fctxt.redirectURL,
             logData: fctxt.filter,
             tstamp: Date.now()
         });
-        if ( result !== 1 ) { return; }
+        if ( result !== 1 || fctxt.redirectURL !== undefined ) { return; }
         const now = Date.now();
         this.blocked.set(key, now);
         this.hash = now;
@@ -76,12 +79,19 @@ const NetFilteringResultCache = class {
         if ( this.blocked.size === 0 ) {
             this.pruneAsync();
         }
+        if ( fctxt.redirectURL !== undefined ) { return; }
         const now = Date.now();
         this.blocked.set(
-            fctxt.getDocHostname() + ' ' + fctxt.type + ' ' + fctxt.url,
+            `${fctxt.getDocHostname()} ${fctxt.type} ${fctxt.url}`,
             now
         );
         this.hash = now;
+    }
+
+    forgetResult(docHostname, type, url) {
+        const key = `${docHostname} ${type} ${url}`;
+        this.results.delete(key);
+        this.blocked.delete(key);
     }
 
     empty() {
@@ -151,10 +161,7 @@ NetFilteringResultCache.prototype.shelfLife = 15000;
 
 /******************************************************************************/
 
-// Frame stores are used solely to associate a URL with a frame id. The
-// name `pageHostname` is used because of historical reasons. A more
-// appropriate name is `frameHostname` -- something to do in a future
-// refactoring.
+// Frame stores are used solely to associate a URL with a frame id.
 
 // To mitigate memory churning
 const frameStoreJunkyard = [];
@@ -166,15 +173,21 @@ const FrameStore = class {
     }
 
     init(frameURL) {
-        const µburi = µb.URI;
-        this.pageHostname = µburi.hostnameFromURI(frameURL);
-        this.pageDomain =
-            µburi.domainFromHostname(this.pageHostname) || this.pageHostname;
+        this.t0 = Date.now();
+        this.exceptCname = undefined;
+        this.clickToLoad = false;
+        this.rawURL = frameURL;
+        if ( frameURL !== undefined ) {
+            this.hostname = vAPI.hostnameFromURI(frameURL);
+            this.domain =
+                vAPI.domainFromHostname(this.hostname) || this.hostname;
+        }
         return this;
     }
 
     dispose() {
-        this.pageHostname = this.pageDomain = '';
+        this.exceptCname = undefined;
+        this.rawURL = this.hostname = this.domain = '';
         if ( frameStoreJunkyard.length < frameStoreJunkyardMax ) {
             frameStoreJunkyard.push(this);
         }
@@ -239,7 +252,6 @@ const PageStore = class {
         this.rawURL = tabContext.rawURL;
         this.hostnameToCountMap = new Map();
         this.contentLastModified = 0;
-        this.frames = new Map();
         this.logData = undefined;
         this.perLoadBlockedRequestCount = 0;
         this.perLoadAllowedRequestCount = 0;
@@ -249,6 +261,10 @@ const PageStore = class {
         this.largeMediaTimer = null;
         this.internalRedirectionCount = 0;
         this.extraData.clear();
+
+        this.frameAddCount = 0;
+        this.frames = new Map();
+        this.setFrameURL(0, tabContext.rawURL);
 
         // The current filtering context is cloned because:
         // - We may be called with or without the current context having been
@@ -303,6 +319,7 @@ const PageStore = class {
             // As part of https://github.com/chrisaljoudi/uBlock/issues/405
             // URL changed, force a re-evaluation of filtering switch
             this.rawURL = tabContext.rawURL;
+            this.setFrameURL(0, this.rawURL);
             return this;
         }
 
@@ -347,16 +364,50 @@ const PageStore = class {
         this.frames.clear();
     }
 
-    getFrame(frameId) {
+    getFrameStore(frameId) {
         return this.frames.get(frameId) || null;
     }
 
-    setFrame(frameId, frameURL) {
-        const frameStore = this.frames.get(frameId);
+    setFrameURL(frameId, frameURL) {
+        let frameStore = this.frames.get(frameId);
         if ( frameStore !== undefined ) {
             frameStore.init(frameURL);
         } else {
-            this.frames.set(frameId, FrameStore.factory(frameURL));
+            frameStore = FrameStore.factory(frameURL);
+            this.frames.set(frameId, frameStore);
+            this.frameAddCount += 1;
+            if ( (this.frameAddCount & 0b111111) === 0 ) {
+                this.pruneFrames();
+            }
+        }
+        return frameStore;
+    }
+
+    // There is no event to tell us a specific subframe has been removed from
+    // the main document. The code below will remove subframes which are no
+    // longer present in the root document. Removing obsolete subframes is
+    // not a critical task, so this is executed just once on a while, to avoid
+    // bloated dictionary of subframes.
+    // A TTL is used to avoid race conditions when new iframes are added
+    // through the webRequest API but still not yet visible through the
+    // webNavigation API.
+    async pruneFrames() {
+        let entries;
+        try {
+            entries = await webext.webNavigation.getAllFrames({
+                tabId: this.tabId
+            });
+        } catch(ex) {
+        }
+        if ( Array.isArray(entries) === false ) { return; }
+        const toKeep = new Set();
+        for ( const { frameId } of entries ) {
+            toKeep.add(frameId);
+        }
+        const obsolete = Date.now() - 60000;
+        for ( const [ frameId, { t0 } ] of this.frames ) {
+            if ( toKeep.has(frameId) || t0 >= obsolete ) { continue; }
+            this.frames.delete(frameId);
         }
     }
 
@@ -512,6 +563,7 @@ const PageStore = class {
         if ( cacheableResult ) {
             const entry = this.netFilteringCache.lookupResult(fctxt);
             if ( entry !== undefined ) {
+                fctxt.redirectURL = entry.redirectURL;
                 fctxt.filter = entry.logData;
                 return entry.result;
             }
@@ -541,19 +593,55 @@ const PageStore = class {
 
         // Static filtering has lowest precedence.
         if ( result === 0 || result === 3 ) {
-            result = µb.staticNetFilteringEngine.matchString(fctxt);
-            if ( result !== 0 && µb.logger.enabled ) {
-                fctxt.filter = µb.staticNetFilteringEngine.toLogData();
+            const snfe = µb.staticNetFilteringEngine;
+            result = snfe.matchString(fctxt);
+            if ( result !== 0 ) {
+                if ( µb.logger.enabled ) {
+                    fctxt.filter = snfe.toLogData();
+                }
+                // https://github.com/uBlockOrigin/uBlock-issues/issues/943
+                //   Blanket-except blocked aliased canonical hostnames?
+                if (
+                    result === 1 &&
+                    fctxt.aliasURL !== undefined &&
+                    snfe.isBlockImportant() === false &&
+                    this.shouldExceptCname(fctxt)
+                ) {
+                    return 2;
+                }
+            }
+        }
+
+        // Click-to-load?
+        // When frameId is not -1, the resource is always sub_frame.
+        if ( result === 1 && fctxt.frameId !== -1 ) {
+            const frameStore = this.getFrameStore(fctxt.frameId);
+            if ( frameStore !== null && frameStore.clickToLoad ) {
+                result = 2;
+                if ( µb.logger.enabled ) {
+                    fctxt.setFilter({
+                        result,
+                        source: 'network',
+                        raw: 'click-to-load',
+                    });
+                }
+            }
+        }
+
+        // https://github.com/gorhill/uBlock/issues/949
+        //   Redirect blocked request?
+        if ( result === 1 && µb.hiddenSettings.ignoreRedirectFilters !== true ) {
+            const redirectURL = µb.redirectEngine.toURL(fctxt);
+            if ( redirectURL !== undefined ) {
+                fctxt.redirectURL = redirectURL;
+                this.internalRedirectionCount += 1;
             }
         }
 
         if ( cacheableResult ) {
             this.netFilteringCache.rememberResult(fctxt, result);
-        } else if (
-            result === 1 &&
-            this.collapsibleResources.has(requestType)
-        ) {
-            this.netFilteringCache.rememberBlock(fctxt, true);
+        } else if ( result === 1 && this.collapsibleResources.has(requestType) ) {
+            this.netFilteringCache.rememberBlock(fctxt);
         }
 
         return result;
@@ -646,6 +734,53 @@ const PageStore = class {
         return 1;
     }
 
+    clickToLoad(frameId, frameURL) {
+        let frameStore = this.getFrameStore(frameId);
+        if ( frameStore === null ) {
+            frameStore = this.setFrameURL(frameId, frameURL);
+        }
+        this.netFilteringCache.forgetResult(
+            this.tabHostname,
+            'sub_frame',
+            frameURL
+        );
+        frameStore.clickToLoad = true;
+    }
+
+    shouldExceptCname(fctxt) {
+        let exceptCname;
+        let frameStore;
+        if ( fctxt.docId !== undefined ) {
+            frameStore = this.getFrameStore(fctxt.docId);
+            if ( frameStore instanceof Object ) {
+                exceptCname = frameStore.exceptCname;
+            }
+        }
+        if ( exceptCname === undefined ) {
+            const result = µb.staticNetFilteringEngine.matchStringReverse(
+                'cname',
+                frameStore instanceof Object
+                    ? frameStore.rawURL
+                    : fctxt.getDocOrigin()
+            );
+            if ( result === 2 ) {
+                exceptCname = µb.logger.enabled
+                    ? µb.staticNetFilteringEngine.toLogData()
+                    : true;
+            } else {
+                exceptCname = false;
+            }
+            if ( frameStore instanceof Object ) {
+                frameStore.exceptCname = exceptCname;
+            }
+        }
+        if ( exceptCname === false ) { return false; }
+        if ( exceptCname instanceof Object ) {
+            fctxt.setFilter(exceptCname);
+        }
+        return true;
+    }
+
     getBlockedResources(request, response) {
         const normalURL = µb.normalizePageURL(this.tabId, request.frameURL);
         const resources = request.resources;
@@ -659,8 +794,7 @@ const PageStore = class {
         if ( Array.isArray(resources) && resources.length !== 0 ) {
             for ( const resource of resources ) {
                 this.filterRequest(
-                    fctxt.setType(resource.type)
-                         .setURL(resource.url)
+                    fctxt.setType(resource.type).setURL(resource.url)
                 );
             }
         }

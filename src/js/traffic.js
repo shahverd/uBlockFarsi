@@ -101,7 +101,7 @@ const onBeforeRequest = function(details) {
             details.type === 'sub_frame' &&
             details.aliasURL === undefined
         ) {
-            pageStore.setFrame(details.frameId, details.url);
+            pageStore.setFrameURL(details.frameId, details.url);
         }
         if ( result === 2 ) {
             return { cancel: false };
@@ -111,22 +111,16 @@ const onBeforeRequest = function(details) {
 
     // Blocked
 
-    // https://github.com/gorhill/uBlock/issues/949
-    //   Redirect blocked request?
-    if ( µb.hiddenSettings.ignoreRedirectFilters !== true ) {
-        const url = µb.redirectEngine.toURL(fctxt);
-        if ( url !== undefined ) {
-            pageStore.internalRedirectionCount += 1;
-            if ( µb.logger.enabled ) {
-                fctxt.setRealm('redirect')
-                     .setFilter({ source: 'redirect', raw: µb.redirectEngine.resourceNameRegister })
-                     .toLogger();
-            }
-            return { redirectUrl: url };
-        }
+    if ( fctxt.redirectURL === undefined ) {
+        return { cancel: true };
     }
 
-    return { cancel: true };
+    if ( µb.logger.enabled ) {
+        fctxt.setRealm('redirect')
+             .setFilter({ source: 'redirect', raw: µb.redirectEngine.resourceNameRegister })
+             .toLogger();
+    }
+    return { redirectUrl: fctxt.redirectURL };
 };
 
 /******************************************************************************/
@@ -243,9 +237,14 @@ const onBeforeRootFrameRequest = function(fctxt) {
 
 // https://github.com/gorhill/uBlock/issues/3208
 //   Mind case insensitivity.
-
+// https://github.com/uBlockOrigin/uBlock-issues/issues/1147
+//   Do not strict-block if the filter pattern does not contain at least one
+//   token character.
 const toBlockDocResult = function(url, hostname, logData) {
     if ( typeof logData.regex !== 'string' ) { return false; }
+    if ( typeof logData.raw === 'string' && /\w/.test(logData.raw) === false ) {
+        return false;
+    }
     const re = new RegExp(logData.regex, 'i');
     const match = re.exec(url.toLowerCase());
     if ( match === null ) { return false; }
@@ -254,9 +253,13 @@ const toBlockDocResult = function(url, hostname, logData) {
     // https://github.com/chrisaljoudi/uBlock/issues/1212
     //   Verify that the end of the match is anchored to the end of the
     //   hostname.
-    const end = match.index + match[0].length -
-                url.indexOf(hostname) - hostname.length;
-    return end === 0 || end === 1;
+    // https://github.com/uBlockOrigin/uAssets/issues/7619#issuecomment-653010310
+    //   Also match FQDN.
+    const hnpos = url.indexOf(hostname);
+    const hnlen = hostname.length;
+    const end = match.index + match[0].length - hnpos - hnlen;
+    return end === 0 || end === 1 ||
+           end === 2 && url.charCodeAt(hnpos + hnlen) === 0x2E /* '.' */;
 };
 
 /******************************************************************************/
@@ -454,11 +457,7 @@ const onHeadersReceived = function(details) {
     const responseHeaders = details.responseHeaders;
 
     if ( requestType === 'image' || requestType === 'media' ) {
-        return foilLargeMediaElement(
-            fctxt,
-            pageStore,
-            responseHeaders
-        );
+        return foilLargeMediaElement(fctxt, pageStore, responseHeaders);
     }
 
     if ( isDoc === false ) { return; }
@@ -1039,15 +1038,7 @@ const strictBlockBypasser = {
 return {
     start: (( ) => {
         vAPI.net = new vAPI.Net();
-
-        if (
-            vAPI.net.canSuspend() &&
-            µBlock.hiddenSettings.suspendTabsUntilReady !== 'no' ||
-            vAPI.net.canSuspend() !== true &&
-            µBlock.hiddenSettings.suspendTabsUntilReady === 'yes'
-        ) {
-            vAPI.net.suspend(true);
-        }
+        vAPI.net.suspend();
 
         return function() {
             vAPI.net.setSuspendableListener(onBeforeRequest);

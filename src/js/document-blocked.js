@@ -82,20 +82,20 @@ let details = {};
 (( ) => {
     const matches = /^(.*)\{\{hostname\}\}(.*)$/.exec(vAPI.i18n('docblockedProceed'));
     if ( matches === null ) { return; }
-    const proceed = uDom('#templates .proceed').clone();
-    proceed.descendants('span:nth-of-type(1)').text(matches[1]);
-    proceed.descendants('span:nth-of-type(4)').text(matches[2]);
-
-    if ( details.hn === details.dn ) {
-        proceed.descendants('span:nth-of-type(2)').remove();
-        proceed.descendants('.hn').text(details.hn);
+    const proceed = document.querySelector('#templates .proceed').cloneNode(true);
+    proceed.children[0].textContent = matches[1];
+    proceed.children[2].textContent = matches[2];
+    const hnOption = proceed.querySelector('.hn');
+    if ( details.hn !== details.dn ) {
+        hnOption.textContent = details.hn;
+        hnOption.setAttribute('value', details.hn);
     } else {
-        proceed.descendants('span:nth-of-type(3)').remove();
-        proceed.descendants('.hn').text(details.hn).attr('value', details.hn);
-        proceed.descendants('.dn').text(details.dn).attr('value', details.dn);
+        hnOption.remove();
     }
-
-    uDom('#proceed').append(proceed);
+    const dnOption = proceed.querySelector('.dn');
+    dnOption.textContent = details.dn;
+    dnOption.setAttribute('value', details.dn);
+    document.getElementById('proceed').append(proceed);
 })();
 
 /******************************************************************************/
@@ -194,10 +194,12 @@ uDom.nodeFromId('why').textContent = details.fs;
         );
     });
 
-    uDom.nodeFromId('theURL').classList.toggle(
-        'collapsed',
-        vAPI.localStorage.getItem('document-blocked-expand-url') !== 'true'
-    );
+    vAPI.localStorage.getItemAsync('document-blocked-expand-url').then(value => {
+        uDom.nodeFromId('theURL').classList.toggle(
+            'collapsed',
+            value !== 'true' && value !== true
+        );
+    });
 })();
 
 /******************************************************************************/

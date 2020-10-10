@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} sau {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "de la instalare",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "sau",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Blocate pe această pagină",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Blocate de la instalare",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Domenii conectate",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Deschide panoul de control",
@@ -167,6 +179,34 @@
     "message": "Apasă pentru a nu mai dezactiva JavaScript pe acest site",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Ferestre suprapuse",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Elemente media mari",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Filtre vizuale",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Fonturi externe",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Mai multe",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Mai puțin",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Reguli globale: această coloană este pentru regulile care se aplică tuturor site-urilor.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} din {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Versiune",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Creează",
@@ -327,10 +371,6 @@
     "message": "Blochează rapoartele CSP",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Spațiu de stocare utilizat: {{value}} octeți",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Ultima restaurare:",
     "description": "English: Last restore:"
@@ -364,7 +404,7 @@
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
-    "message": "<p>Această opțiune permite citirea și aplicarea <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">filtrelor compatibile Adblock Plus pentru &ldquo;ascunderea elementelor&rdquo;</a>. Aceste filtre sunt în esență vizuale, ele servesc la ascunderea elementelor dintr-o pagină web care sunt considerate drept o neplăcere vizuală și care nu pot fi blocate de motorul de filtrare bazat pe cereri de rețea.</p><p>Activând această opțiune memoria utilizată de uBlock₀ va crește.</p>",
+    "message": "<p>Această opțiune permite citirea și aplicarea <a href=\"https://adblockplus.org/en/faq_internal#elemhide\">filtrelor compatibile Adblock Plus pentru &ldquo;ascunderea elementelor&rdquo;</a>. Aceste filtre sunt în esență vizuale, ele servesc la ascunderea elementelor dintr-o pagină web care sunt considerate drept o neplăcere vizuală și care nu pot fi blocate de motorul de filtrare bazat pe cereri de rețea.</p><p>Activând această opțiune memoria utilizată de <i>uBlock</i> va crește.</p>",
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
@@ -426,6 +466,10 @@
   "3pExternalListObsolete": {
     "message": "învechit",
     "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "vezi conținut",
+    "description": "used as a tooltip for eye icon beside a list"
   },
   "3pLastUpdate": {
     "message": "Ultima actualizare: {{ago}}.\nClic pentru a forța o actualizare.",
@@ -507,9 +551,25 @@
     "message": "Sintaxa pentru regulă: <code>sursă destinație tip acțiune</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>documentație</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sortare:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Tipul regulei",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Sursa",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destinaţia",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "Lista ta de nume de gazde unde uBlock Origin va fi dezactivat. O înregistrare pe linie. Directivele nevalide vor fi ignorate automat și comentate.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "Lista ta de nume de gazde unde uBlock va fi dezactivat. Fiecare adresă pe o singură linie. Adresele nevalide vor fi ignorate automat.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importă și adaugă",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "lista-mea-de-excluderi-ublock_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Aplică modificările",
@@ -568,7 +628,7 @@
     "description": "Tooltip for the popup panel button in the logger page"
   },
   "loggerInfoTip": {
-    "message": "uBlock Origin wiki: Jurnalierul",
+    "message": "uBlock Origin wiki: Jurnal",
     "description": "Tooltip for the top-right info label in the logger page"
   },
   "loggerClearTip": {
@@ -795,6 +855,18 @@
     "message": "Contribuitori",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Cod sursă",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Traduceri",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Liste de filtre",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Dependențe externe (compatibile GPLv3):",
     "description": "Shown in the About pane"
@@ -832,8 +904,12 @@
     "description": "English: Network error: {{msg}}"
   },
   "subscriberConfirm": {
-    "message": "uBlock₀: Adaug următorul URL în lista ta de filtre personalizate?\n\nTitlu: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "message": "uBlock: Adaugă următorul URL în lista ta de filtre personalizate?\n\nTitlu: \"{{title}}\"\nURL: {{url}}",
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Abonează-te",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "acum un minut",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin a prevenit încărcarea acestei pagini:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Din cauza următorului filtru",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "fără parametri",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Relaxați modul de blocare",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Spațiu de stocare utilizat: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Aceasta intrare trebuie sa fie ultima",

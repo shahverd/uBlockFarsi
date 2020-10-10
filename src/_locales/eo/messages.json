@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} aŭ {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "ekde instalado",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "aŭ",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Blokita ĉe ĉi tiu paĝo",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Blokita ekde instalo",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Konektitaj domajnoj",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Klaku por malfermi la panelon",
@@ -167,6 +179,34 @@
     "message": "Alklaku por ne plu malaktivigi JavaScript en tiu ĉi retejo",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Ŝprucfenestroj",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Large media elements",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Ornama filtrado",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Foraj tiparoj",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Pli",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Malpli",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Ĝeneralaj reguloj: ĉi tiu kolumno estas por reguloj, kiuj aplikas al ĉiuj retejoj.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} de {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Versio",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Krei",
@@ -324,12 +368,8 @@
     "description": "The default state for the per-site no-scripting switch"
   },
   "settingsNoCSPReportsPrompt": {
-    "message": "Block CSP reports",
+    "message": "Bloki CSP-raportojn",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
-  },
-  "settingsStorageUsed": {
-    "message": "Uzata konservado: {{value}} bitokoj",
-    "description": "English: Storage used: {{}} bytes"
   },
   "settingsLastRestorePrompt": {
     "message": "Lasta restaŭro:",
@@ -372,7 +412,7 @@
     "description": "This will cause uBO to ignore all generic cosmetic filters."
   },
   "3pIgnoreGenericCosmeticFiltersInfo": {
-    "message": "<p>Generic cosmetic filters are those cosmetic filters which are meant to apply on all web sites.<p>Though handled efficiently by uBlock₀, generic cosmetic filters may still contribute measurable memory and CPU overhead on some web pages, especially for large and long-lived ones.<p>Enabling this option will eliminate the memory and CPU overhead added to web pages as a result of handling generic cosmetic filters, and also lower the memory footprint of uBlock₀ itself.<p>It is recommended to enable this option on less powerful devices.",
+    "message": "Generic cosmetic filters are those cosmetic filters which are meant to apply on all web sites. Enabling this option will eliminate the memory and CPU overhead added to web pages as a result of handling generic cosmetic filters.\n\nIt is recommended to enable this option on less powerful devices.",
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pListsOfBlockedHostsHeader": {
@@ -426,6 +466,10 @@
   "3pExternalListObsolete": {
     "message": "malaktuala",
     "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "vidi enhavon",
+    "description": "used as a tooltip for eye icon beside a list"
   },
   "3pLastUpdate": {
     "message": "Lasta ĝisdatigo: {{ago}}",
@@ -507,9 +551,25 @@
     "message": "Sintakso de reguloj: <code>fonto celo tipo ago</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>kompleta dokumentado</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sort:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Rule type",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Source",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destination",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
     "message": "Via listo de gastignomoj por kiuj uBlock₀ estos malŝaltata. Unu gastignomo por ĉiu linio. Nevalidaj gastignomoj estos ignorataj silente.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Importi kaj postaldoni",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "mia-ublock-blanklisto_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Apliki ŝanĝojn",
@@ -556,11 +616,11 @@
     "description": "Appears in the logger's tab selector"
   },
   "loggerReloadTip": {
-    "message": "Reload the tab content",
+    "message": "Reŝargi la langetan enhavon",
     "description": "Tooltip for the reload button in the logger page"
   },
   "loggerDomInspectorTip": {
-    "message": "Toggle the DOM inspector",
+    "message": "Baskuligi la DOM-inspektilon",
     "description": "Tooltip for the DOM inspector button in the logger page"
   },
   "loggerPopupPanelTip": {
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "Static filter <code>{{filter}}</code> could not be found in any of the currently enabled filter lists",
+    "message": "Static filter could not be found in any of the currently enabled filter lists",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Kontribuantoj",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Fontkodo",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Tradukoj",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Listoj de filtriloj",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "External dependencies (GPLv3-compatible):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: Ĉu vi volas aldoni la sekvan ligilon al viaj tajloritaj listoj de filtriloj?\n\nTitolo: \"{{title}}\"\nLigilo: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Subscribe",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "antaŭ 1 minuto",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock₀ preventis la ŝarĝadon de la sekva paĝo:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Pro la sekva filtrilo",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "sen parametroj",
@@ -944,7 +1020,7 @@
     "description": "for generic 'Revert' buttons"
   },
   "genericBytes": {
-    "message": "bitokoj",
+    "message": "bajtoj",
     "description": ""
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Relax blocking mode",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Uzata memoro: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "kB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "This entry must be the last one",

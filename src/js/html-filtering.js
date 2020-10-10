@@ -29,13 +29,7 @@
     const duplicates = new Set();
 
     const filterDB = new µb.staticExtFilteringEngine.HostnameBasedDB(2);
-    const sessionFilterDB = new (
-        class extends µb.staticExtFilteringEngine.SessionDB {
-            compile(s) {
-                return µb.staticExtFilteringEngine.compileSelector(s.slice(1));
-            }
-        }
-    )();
+    const sessionFilterDB = new µb.staticExtFilteringEngine.SessionDB();
 
     let acceptedCount = 0;
     let discardedCount = 0;
@@ -95,22 +89,6 @@
         }
     };
 
-    const PSelectorNthAncestorTask = class {
-        constructor(task) {
-            this.nth = task[1];
-        }
-        transpose(node, output) {
-            let nth = this.nth;
-            for (;;) {
-                node = node.parentElement;
-                if ( node === null ) { return; }
-                nth -= 1;
-                if ( nth === 0 ) { break; }
-            }
-            output.push(node);
-        }
-    };
-
     const PSelectorSpathTask = class {
         constructor(task) {
             this.spath = task[1];
@@ -132,6 +110,36 @@
             }
         }
     };
+
+    const PSelectorUpwardTask = class {
+        constructor(task) {
+            const arg = task[1];
+            if ( typeof arg === 'number' ) {
+                this.i = arg;
+            } else {
+                this.s = arg;
+            }
+        }
+        transpose(node, output) {
+            if ( this.s !== '' ) {
+                const parent = node.parentElement;
+                if ( parent === null ) { return; }
+                node = parent.closest(this.s);
+                if ( node === null ) { return; }
+            } else {
+                let nth = this.i;
+                for (;;) {
+                    node = node.parentElement;
+                    if ( node === null ) { return; }
+                    nth -= 1;
+                    if ( nth === 0 ) { break; }
+                }
+            }
+            output.push(node);
+        }
+    };
+    PSelectorUpwardTask.prototype.i = 0;
+    PSelectorUpwardTask.prototype.s = '';
 
     const PSelectorXpathTask = class {
         constructor(task) {
@@ -178,7 +186,7 @@
         prime(input) {
             const root = input || docRegister;
             if ( this.selector === '' ) { return [ root ]; }
-            return root.querySelectorAll(this.selector);
+            return Array.from(root.querySelectorAll(this.selector));
         }
         exec(input) {
             if ( this.invalid ) { return []; }
@@ -218,8 +226,9 @@
         [ ':if-not', PSelectorIfNotTask ],
         [ ':min-text-length', PSelectorMinTextLengthTask ],
         [ ':not', PSelectorIfNotTask ],
-        [ ':nth-ancestor', PSelectorNthAncestorTask ],
+        [ ':nth-ancestor', PSelectorUpwardTask ],
         [ ':spath', PSelectorSpathTask ],
+        [ ':upward', PSelectorUpwardTask ],
         [ ':xpath', PSelectorXpathTask ],
     ]);
     PSelector.prototype.invalid = false;
@@ -246,14 +255,10 @@
             pselectors.set(selector, pselector);
         }
         const nodes = pselector.exec();
-        let i = nodes.length,
-            modified = false;
-        while ( i-- ) {
-            const node = nodes[i];
-            if ( node.parentNode !== null ) {
-                node.parentNode.removeChild(node);
-                modified = true;
-            }
+        let modified = false;
+        for ( const node of nodes ) {
+            node.remove();
+            modified = true;
         }
         if ( modified && µb.logger.enabled ) {
             logOne(details, 0, pselector.raw);
@@ -263,14 +268,10 @@
 
     const applyCSSSelector = function(details, selector) {
         const nodes = docRegister.querySelectorAll(selector);
-        let i = nodes.length,
-            modified = false;
-        while ( i-- ) {
-            const node = nodes[i];
-            if ( node.parentNode !== null ) {
-                node.parentNode.removeChild(node);
-                modified = true;
-            }
+        let modified = false;
+        for ( const node of nodes ) {
+            node.remove();
+            modified = true;
         }
         if ( modified && µb.logger.enabled ) {
             logOne(details, 0, selector);
@@ -291,15 +292,14 @@
         filterDB.collectGarbage();
     };
 
-    api.compile = function(parsed, writer) {
-        const selector = parsed.suffix.slice(1).trim();
-        const compiled = µb.staticExtFilteringEngine.compileSelector(selector);
+    api.compile = function(parser, writer) {
+        const { raw, compiled, exception } = parser.result;
         if ( compiled === undefined ) {
             const who = writer.properties.get('assetKey') || '?';
             µb.logger.writeOne({
                 realm: 'message',
                 type: 'error',
-                text: `Invalid HTML filter in ${who}: ##${selector}`
+                text: `Invalid HTML filter in ${who}: ##${raw}`
             });
             return;
         }
@@ -309,10 +309,11 @@
 
         // TODO: Mind negated hostnames, they are currently discarded.
 
-        for ( const hn of parsed.hostnames ) {
-            if ( hn.charCodeAt(0) === 0x7E /* '~' */ ) { continue; }
+        for ( const { hn, not, bad } of parser.extOptions() ) {
+            if ( bad ) { continue; }
             let kind = 0;
-            if ( parsed.exception ) {
+            if ( exception ) {
+                if ( not ) { continue; }
                 kind |= 0b01;
             }
             if ( compiled.charCodeAt(0) === 0x7B /* '{' */ ) {

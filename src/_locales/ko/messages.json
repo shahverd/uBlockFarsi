@@ -28,7 +28,7 @@
     "description": "appears as tab name in dashboard"
   },
   "3pPageName": {
-    "message": "보조 필터",
+    "message": "필터 목록",
     "description": "appears as tab name in dashboard"
   },
   "1pPageName": {
@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}}개 / {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "설치된 이후",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "/",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "이 페이지에서 차단됨",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "설치 후 차단됨",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "도메인 연결됨",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "클릭하여 대시보드 열기",
@@ -167,6 +179,34 @@
     "message": "클릭하여 이 사이트에서 JavaScript 활성화",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "팝업 창",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "큰 미디어 요소",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "표면 필터링",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "원격 폰트",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "자바스크립트",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "더보기",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "간단히",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "공용 규칙: 이 열은 모든 사이트에 적용되는 규칙 열 입니다.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{total}}개 중 {{count}}개",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "버전",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "생성",
@@ -327,10 +371,6 @@
     "message": "CSP 보고서 차단",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "스토리지 사용량: {{value}} 바이트",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "최근 복원:",
     "description": "English: Last restore:"
@@ -427,6 +467,10 @@
     "message": "구버전",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "내용 보기",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "마지막 업데이트: {{ago}}\n업데이트하려면 여기를 클릭하세요.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -507,9 +551,25 @@
     "message": "규칙 문법: <code>소스 페이지, 필터링 대상, 필터링할 타입, 적용할 조치</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>전체 설명서</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "분류:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "규칙 유형",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "소스",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "목표",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "목록에 있는 호스트들은 uBlock₀에서 비활성화됩니다. 한 줄에 한 개씩 입력하세요. 존재하지 않는 호스트는 무시 및 주석 처리됩니다.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "목록에 있는 호스트들은 uBlock₀에서 비활성화됩니다. 한 줄에 한 개씩 입력하세요. 존재하지 않는 호스트는 자동으로 무시됩니다.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "가져오기 및 추가하기",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "ublock-제외목록_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "변경사항 적용",
@@ -795,6 +855,18 @@
     "message": "기여자",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "소스 코드",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "번역",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "필터 목록",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "외부 종속성 (GPLv3 호환):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: 선택한 URL을 사용자 지정 필터 목록에 추가하시겠습니까?\n\n제목: \"{{title}}\"\nURL: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "구독",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "1 분 전",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin이 다음 페이지를 로드하는것을 방지했습니다:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "다음 필터로 인해 방지됨",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "제외 매개 변수",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "차단 모드 완화",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "스토리지 사용량: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "This entry must be the last one",

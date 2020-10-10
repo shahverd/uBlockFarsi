@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} или {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "общо досега",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "или",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Блокирани на тази страница",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Блокирани общо досега",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Свързани домейни",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Табло с настройки",
@@ -167,6 +179,34 @@
     "message": "Щракнете, за да разрешите JavaScript за този сайт",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Изкачащи прозорци",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Големи мултимедийни елементи",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Козметично филтриране",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Външни шрифтове",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Още",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "По-малко",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Глобални правила: колона с правила, приложими към всички сайтове.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}} от {{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Версия",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Създаване",
@@ -327,10 +371,6 @@
     "message": "Блокиране на CSP отчетите",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Използвана памет за съхранение: {{value}} байта",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Последно възстановяване:",
     "description": "English: Last restore:"
@@ -427,6 +467,10 @@
     "message": "Остарял",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "Преглед на съдържанието",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "Последно обновяване: {{ago}}.\nЩракнете за принудително обновяване.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -440,7 +484,7 @@
     "description": "used as a tooltip for error icon beside a list"
   },
   "1pFormatHint": {
-    "message": "Един филтър на ред. Може да е обикновено име на хост или съвместим с Adblock Plus филтър. Редовете с представка <code>!</code> ще бъдат игнорирани.",
+    "message": "Един филтър на ред. Това може да бъде обикновен адрес или съвместим с Adblock Plus филтър. Редовете с представка &lsquo;!&rsquo; ще бъдат игнорирани.",
     "description": "Short information about how to create custom filters"
   },
   "1pImport": {
@@ -507,9 +551,25 @@
     "message": "Синтаксис на правилото: <code>източник цел тип действие</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>пълна документация</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Сортиране:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Тип правило",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Източник",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Дестинация",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
-    "message": "Списък на адресите, за които uBlock₀ ще бъде изключен. Един елемент на ред. Невалидните адреси ще бъдат игнорирани.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "message": "Списък на адресите, за които uBlock Origin ще бъде изключен. Един елемент на ред. Недействителните адреси ще бъдат пренебрегнати.",
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Внасяне от файл...",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "ublock-изключения_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Прилагане на промените",
@@ -712,7 +772,7 @@
     "description": "Below this sentence, the filter list(s) in which the filter was found"
   },
   "loggerStaticFilteringFinderSentence2": {
-    "message": "Статичният филтър <code>{{filter}}</code> не е намерен в никой от списъка с активни филтри",
+    "message": "Статичният филтър не е намерен в никой от активните списъци с филтри",
     "description": "Message to show when a filter cannot be found in any filter lists"
   },
   "loggerSettingDiscardPrompt": {
@@ -795,6 +855,18 @@
     "message": "Сътрудници",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Изходен код",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Преводи",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Списъци с филтри",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Външни зависимости (съвместими с GPLv3):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: Добавяне на следния адрес към потребителският списък с филтри?\n\nИме: \"{{title}}\"\nURL адрес: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Абониране",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "преди минута",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin предотврати зареждането на страницата:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Блокиращ филтър",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "без параметри",
@@ -970,6 +1046,22 @@
   "relaxBlockingMode": {
     "message": "Отпуснат режим на блокиране",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Използвано пространство: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "КБ",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "МБ",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "ГБ",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "Това поле трябва да бъде последното",

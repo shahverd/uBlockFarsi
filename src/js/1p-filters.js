@@ -29,33 +29,35 @@
 
 /******************************************************************************/
 
-const cmEditor = new CodeMirror(
-    document.getElementById('userFilters'),
-    {
-        autofocus: true,
-        lineNumbers: true,
-        lineWrapping: true,
-        styleActiveLine: true,
-    }
-);
+const cmEditor = new CodeMirror(document.getElementById('userFilters'), {
+    autoCloseBrackets: true,
+    autofocus: true,
+    extraKeys: {
+        'Ctrl-Space': 'autocomplete',
+        'Tab': 'toggleComment',
+    },
+    foldGutter: true,
+    gutters: [ 'CodeMirror-linenumbers', 'CodeMirror-foldgutter' ],
+    lineNumbers: true,
+    lineWrapping: true,
+    matchBrackets: true,
+    maxScanLines: 1,
+    styleActiveLine: true,
+});
 
 uBlockDashboard.patchCodeMirrorEditor(cmEditor);
 
-let cachedUserFilters = '';
-
-/******************************************************************************/
-
-// https://github.com/gorhill/uBlock/issues/3706
-//   Save/restore cursor position
-//
-// CoreMirror reference: https://codemirror.net/doc/manual.html#api_selection
-
-window.addEventListener('beforeunload', ( ) => {
-    vAPI.localStorage.setItem(
-        'myFiltersCursorPosition',
-        JSON.stringify(cmEditor.getCursor().line)
-    );
+vAPI.messaging.send('dashboard', {
+    what: 'getAutoCompleteDetails'
+}).then(response => {
+    if ( response instanceof Object === false ) { return; }
+    const mode = cmEditor.getMode();
+    if ( mode.setHints instanceof Function ) {
+        mode.setHints(response);
+    }
 });
+
+let cachedUserFilters = '';
 
 /******************************************************************************/
 
@@ -71,7 +73,7 @@ const userFiltersChanged = function(changed) {
 
 /******************************************************************************/
 
-const renderUserFilters = async function(first) {
+const renderUserFilters = async function() {
     const details = await vAPI.messaging.send('dashboard', {
         what: 'readUserFilters',
     });
@@ -83,18 +85,7 @@ const renderUserFilters = async function(first) {
         content += '\n';
     }
     cmEditor.setValue(content);
-    if ( first ) {
-        cmEditor.clearHistory();
-        try {
-            const line = JSON.parse(
-                vAPI.localStorage.getItem('myFiltersCursorPosition')
-            );
-            if ( typeof line === 'number' ) {
-                cmEditor.setCursor(line, 0);
-            }
-        } catch(ex) {
-        }
-    }
+
     userFiltersChanged(false);
 };
 
@@ -224,7 +215,32 @@ uDom('#exportUserFiltersToFile').on('click', exportUserFiltersToFile);
 uDom('#userFiltersApply').on('click', ( ) => { applyChanges(); });
 uDom('#userFiltersRevert').on('click', revertChanges);
 
-renderUserFilters(true);
+// https://github.com/gorhill/uBlock/issues/3706
+//   Save/restore cursor position
+//
+// CodeMirror reference: https://codemirror.net/doc/manual.html#api_selection
+{
+    let curline = 0;
+    let timer;
+
+    renderUserFilters().then(( ) => {
+        cmEditor.clearHistory();
+        return vAPI.localStorage.getItemAsync('myFiltersCursorPosition');
+    }).then(line => {
+        if ( typeof line === 'number' ) {
+            cmEditor.setCursor(line, 0);
+        }
+        cmEditor.on('cursorActivity', ( ) => {
+            if ( timer !== undefined ) { return; }
+            if ( cmEditor.getCursor().line === curline ) { return; }
+            timer = vAPI.setTimeout(( ) => {
+                timer = undefined;
+                curline = cmEditor.getCursor().line;
+                vAPI.localStorage.setItem('myFiltersCursorPosition', curline);
+            }, 701);
+        });
+    });
+}
 
 cmEditor.on('changes', userFiltersChanged);
 CodeMirror.commands.save = applyChanges;

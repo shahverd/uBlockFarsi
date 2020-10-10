@@ -85,7 +85,7 @@
   },
   "popupBlockedStats": {
     "message": "{{count}} tai {{percent}}%",
-    "description": "Example: 15 or 13%"
+    "description": "Example: 15 (13%)"
   },
   "popupBlockedSinceInstallPrompt": {
     "message": "asennuksen jälkeen",
@@ -94,6 +94,18 @@
   "popupOr": {
     "message": "tai",
     "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Estetty tällä sivulla",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Estetty asennuksen jälkeen",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Yhdistetyt verkkotunnukset",
+    "description": "For the new mobile-friendly popup design"
   },
   "popupTipDashboard": {
     "message": "Avaa hallintapaneeli",
@@ -167,6 +179,34 @@
     "message": "Klikkaa palauttaaksesi JavaScriptin käyttö tällä sivulla",
     "description": "Tooltip for the no-scripting per-site switch"
   },
+  "popupNoPopups_v2": {
+    "message": "Ponnahdusikkunat",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Suuret mediaelementit",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Kosmeettinen suodatus",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Ladattavat fontit",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Lisää",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Vähemmän",
+    "description": "Label to be used to hide popup panel sections"
+  },
   "popupTipGlobalRules": {
     "message": "Yleiset säännöt: tämä sarake on säännöille, joita käytetään kaikille sivustoille.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
@@ -180,7 +220,7 @@
     "description": "Tooltip when hovering over the padlock in the dynamic filtering pane."
   },
   "popupTipRevertRules": {
-    "message": "Paina kumotaksesi muutoksesi.",
+    "message": "Klikkaa kumotaksesi muutoksesi.",
     "description": "Tooltip when hovering over the eraser in the dynamic filtering pane."
   },
   "popupAnyRulePrompt": {
@@ -222,6 +262,10 @@
   "popupHitDomainCount": {
     "message": "{{count}}/{{total}}",
     "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Versio",
+    "description": "Example of use: Version 1.26.4"
   },
   "pickerCreate": {
     "message": "Luo",
@@ -327,10 +371,6 @@
     "message": "Estä CSP-raportit",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
-  "settingsStorageUsed": {
-    "message": "Tilaa käytetty: {{value}} tavua",
-    "description": "English: Storage used: {{}} bytes"
-  },
   "settingsLastRestorePrompt": {
     "message": "Viimeisin palautus:",
     "description": "English: Last restore:"
@@ -427,6 +467,10 @@
     "message": "Vanhentunut.",
     "description": "used as a tooltip for the out-of-date icon beside a list"
   },
+  "3pViewContent": {
+    "message": "näytä sisältö",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
   "3pLastUpdate": {
     "message": "Viimeisin päivitys: {{ago}}.\nKlikkaa päivittääksesi manuaalisesti.",
     "description": "used as a tooltip for the clock icon beside a list"
@@ -507,9 +551,25 @@
     "message": "Säännön syntaksi: <code>lähde kohde tyyppi toiminto</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>täysi dokumentaatio</a>).",
     "description": "English: dynamic rule syntax and full documentation."
   },
+  "rulesSort": {
+    "message": "Sort:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Rule type",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Source",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Destination",
+    "description": "English: a sort option for list of rules."
+  },
   "whitelistPrompt": {
     "message": "Lista osoitteista, joissa haluat kytkeä uBlock₀:n pois päältä. Kirjoita yksi osoite kullekin riville. Virheelliset säännöt ohitetaan.",
-    "description": "English: An overview of the content of the dashboard's Whitelist pane."
+    "description": "The name of the trusted sites pane."
   },
   "whitelistImport": {
     "message": "Tuo ja lisää",
@@ -521,7 +581,7 @@
   },
   "whitelistExportFilename": {
     "message": "minun-ublock-valkolista_{{datetime}}.txt",
-    "description": "English: my-ublock-whitelist_{{datetime}}.txt"
+    "description": "The default filename to use for import/export purpose"
   },
   "whitelistApply": {
     "message": "Vahvista muutokset",
@@ -795,6 +855,18 @@
     "message": "Kehittäjät",
     "description": "English: Contributors"
   },
+  "aboutSourceCode": {
+    "message": "Lähdekoodi",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Käännökset",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Suodatinlistat",
+    "description": "Link text to uBO's own filter lists repo"
+  },
   "aboutDependencies": {
     "message": "Ulkopuoliset riippuvuudet (GPLv3-yhteensopiva):",
     "description": "Shown in the About pane"
@@ -833,7 +905,11 @@
   },
   "subscriberConfirm": {
     "message": "uBlock₀: Lisätäänkö seuraava URL-osoite mukautettujen suodattimien luetteloihisi?\n\nNimi: \"{{title}}\"\nURL-osoite: {{url}}",
-    "description": "English: The message seen by the user to confirm subscription to a ABP filter list"
+    "description": "No longer used"
+  },
+  "subscribeButton": {
+    "message": "Subscribe",
+    "description": "For the button used to subscribe to a filter list"
   },
   "elapsedOneMinuteAgo": {
     "message": "minuutti sitten",
@@ -873,11 +949,11 @@
   },
   "docblockedPrompt1": {
     "message": "uBlock Origin on estänyt seuraavaa sivua lataamasta:",
-    "description": "English: uBlock₀ has prevented the following page from loading:"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedPrompt2": {
     "message": "Seuraavan suodattimen vuoksi",
-    "description": "English: Because of the following filter"
+    "description": "Used in the strict-blocking page"
   },
   "docblockedNoParamsPrompt": {
     "message": "ilman parametrejä",
@@ -964,12 +1040,28 @@
     "description": "Label for buttons used to copy something to the clipboard"
   },
   "toggleBlockingProfile": {
-    "message": "Toggle blocking profile",
+    "message": "Valitse esto-profiili",
     "description": "Label for keyboard shortcut used to toggle blocking profile"
   },
   "relaxBlockingMode": {
     "message": "Kevennä estotilaa",
     "description": "Label for keyboard shortcut used to relax blocking mode (meant to replace 'Toggle blocking profile')"
+  },
+  "storageUsed": {
+    "message": "Tallennustilaa käytössä: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "Kt",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "Mt",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "Gt",
+    "description": "short for 'gigabytes'"
   },
   "dummy": {
     "message": "This entry must be the last one",

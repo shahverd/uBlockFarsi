@@ -33,6 +33,10 @@ const errorCantConnectTo = vAPI.i18n('errorCantConnectTo');
 
 const api = {};
 
+// A hint for various pieces of code to take measures if possible to save
+// bandwidth of remote servers.
+let remoteServerFriendly = false;
+
 /******************************************************************************/
 
 const observers = [];
@@ -157,15 +161,19 @@ api.fetchText = async function(url) {
     // https://github.com/gorhill/uBlock/issues/2592
     //   Force browser cache to be bypassed, but only for resources which have
     //   been fetched more than one hour ago.
-    //
     // https://github.com/uBlockOrigin/uBlock-issues/issues/682#issuecomment-515197130
     //   Provide filter list authors a way to completely bypass
     //   the browser cache.
-    if ( isExternal ) {
+    // https://github.com/gorhill/uBlock/commit/048bfd251c9b#r37972005
+    //   Use modulo prime numbers to avoid generating the same token at the
+    //   same time across different days.
+    // Do not bypass browser cache if we are asked to be gentle on remote
+    // servers.
+    if ( isExternal && remoteServerFriendly !== true ) {
         const cacheBypassToken =
             µBlock.hiddenSettings.updateAssetBypassBrowserCache
-                ? Math.floor(Date.now() /    1000) % 86400
-                : Math.floor(Date.now() / 3600000) %    12;
+                ? Math.floor(Date.now() /    1000) % 86413
+                : Math.floor(Date.now() / 3600000) %    13;
         const queryValue = `_=${cacheBypassToken}`;
         if ( actualUrl.indexOf('?') === -1 ) {
             actualUrl += '?';
@@ -219,7 +227,11 @@ api.fetchFilterList = async function(mainlistURL) {
     //   Anything under URL's root directory is allowed to be fetched. The
     //   URL of a sublist will always be relative to the URL of the parent
     //   list (instead of the URL of the root list).
-    let rootDirectoryURL = toParsedURL(mainlistURL);
+    let rootDirectoryURL = toParsedURL(
+        reIsExternalPath.test(mainlistURL)
+            ? mainlistURL
+            : vAPI.getURL(mainlistURL)
+    );
     if ( rootDirectoryURL !== undefined ) {
         const pos = rootDirectoryURL.pathname.lastIndexOf('/');
         if ( pos !== -1 ) {
@@ -232,6 +244,7 @@ api.fetchFilterList = async function(mainlistURL) {
 
     const sublistURLs = new Set();
 
+    // https://github.com/uBlockOrigin/uBlock-issues/issues/1113
     const processIncludeDirectives = function(results) {
         const out = [];
         const reInclude = /^!#include +(\S+)/gm;
@@ -242,29 +255,36 @@ api.fetchFilterList = async function(mainlistURL) {
             }
             if ( result instanceof Object === false ) { continue; }
             const content = result.content;
-            let lastIndex = 0;
-            for (;;) {
-                if ( rootDirectoryURL === undefined ) { break; }
-                const match = reInclude.exec(content);
-                if ( match === null ) { break; }
-                if ( toParsedURL(match[1]) !== undefined ) { continue; }
-                if ( match[1].indexOf('..') !== -1 ) { continue; }
-                const subURL = toParsedURL(result.url);
-                subURL.pathname = subURL.pathname.replace(/[^/]+$/, match[1]);
-                if ( subURL.href.startsWith(rootDirectoryURL.href) === false ) {
+            const slices = µBlock.preparseDirectives.split(content);
+            for ( let i = 0, n = slices.length - 1; i < n; i++ ) {
+                const slice = content.slice(slices[i+0], slices[i+1]);
+                if ( (i & 1) !== 0 ) {
+                    out.push(slice);
                     continue;
                 }
-                if ( sublistURLs.has(subURL.href) ) { continue; }
-                sublistURLs.add(subURL.href);
-                out.push(
-                    content.slice(lastIndex, match.index),
-                    `! >>>>>>>> ${subURL.href}`,
-                    api.fetchText(subURL.href),
-                    `! <<<<<<<< ${subURL.href}`
-                );
-                lastIndex = reInclude.lastIndex;
+                let lastIndex = 0;
+                for (;;) {
+                    if ( rootDirectoryURL === undefined ) { break; }
+                    const match = reInclude.exec(slice);
+                    if ( match === null ) { break; }
+                    if ( toParsedURL(match[1]) !== undefined ) { continue; }
+                    if ( match[1].indexOf('..') !== -1 ) { continue; }
+                    // Compute nested list path relative to parent list path
+                    const pos = result.url.lastIndexOf('/');
+                    if ( pos === -1 ) { continue; }
+                    const subURL = result.url.slice(0, pos + 1) + match[1];
+                    if ( sublistURLs.has(subURL) ) { continue; }
+                    sublistURLs.add(subURL);
+                    out.push(
+                        slice.slice(lastIndex, match.index + match[0].length),
+                        `! >>>>>>>> ${subURL}`,
+                        api.fetchText(subURL),
+                        `! <<<<<<<< ${subURL}`
+                    );
+                    lastIndex = reInclude.lastIndex;
+                }
+                out.push(lastIndex === 0 ? slice : slice.slice(lastIndex));
             }
-            out.push(lastIndex === 0 ? content : content.slice(lastIndex));
         }
         return out;
     };
@@ -696,6 +716,9 @@ api.get = async function(assetKey, options = {}) {
         contentURLs = [ assetDetails.contentURL ];
     } else if ( Array.isArray(assetDetails.contentURL) ) {
         contentURLs = assetDetails.contentURL.slice(0);
+    } else if ( reIsExternalPath.test(assetKey) ) {
+        assetDetails.content = 'filters';
+        contentURLs = [ assetKey ];
     }
 
     for ( const contentURL of contentURLs ) {
@@ -740,6 +763,19 @@ const getRemote = async function(assetKey) {
         contentURLs = assetDetails.contentURL.slice(0);
     }
 
+    // If asked to be gentle on remote servers, favour using dedicated CDN
+    // servers. If more than one CDN server is present, randomly shuffle the
+    // set of servers so as to spread the bandwidth burden.
+    if ( remoteServerFriendly && Array.isArray(assetDetails.cdnURLs) ) {
+        const cdnURLs = assetDetails.cdnURLs.slice();
+        for ( let i = 0, n = cdnURLs.length; i < n; i++ ) {
+            const j = Math.floor(Math.random() * n);
+            if ( j === i ) { continue; }
+            [ cdnURLs[j], cdnURLs[i] ] = [ cdnURLs[i], cdnURLs[j] ];
+        }
+        contentURLs.unshift(...cdnURLs);
+    }
+
     for ( const contentURL of contentURLs ) {
         if ( reIsExternalPath.test(contentURL) === false ) { continue; }
 
@@ -753,18 +789,17 @@ const getRemote = async function(assetKey) {
             if ( result.statusCode === 0 ) {
                 error = 'network error';
             }
-            registerAssetSource(
-                assetKey,
-                { error: { time: Date.now(), error } }
-            );
+            registerAssetSource(assetKey, {
+                error: { time: Date.now(), error }
+            });
             continue;
         }
 
         // Success
-        assetCacheWrite(
-            assetKey,
-            { content: result.content, url: contentURL }
-        );
+        assetCacheWrite(assetKey, {
+            content: result.content,
+            url: contentURL
+        });
         registerAssetSource(assetKey, { error: undefined });
         return reportBack(result.content);
     }
@@ -832,9 +867,10 @@ const updaterAssetDelayDefault = 120000;
 const updaterUpdated = [];
 const updaterFetched = new Set();
 
-let updaterStatus,
-    updaterTimer,
-    updaterAssetDelay = updaterAssetDelayDefault;
+let updaterStatus;
+let updaterTimer;
+let updaterAssetDelay = updaterAssetDelayDefault;
+let updaterAuto = false;
 
 const updateFirst = function() {
     updaterStatus = 'updating';
@@ -851,41 +887,51 @@ const updateNext = async function() {
     ]);
 
     const now = Date.now();
-    let assetKeyToUpdate;
+    const toUpdate = [];
     for ( const assetKey in assetDict ) {
         const assetEntry = assetDict[assetKey];
         if ( assetEntry.hasRemoteURL !== true ) { continue; }
         if ( updaterFetched.has(assetKey) ) { continue; }
         const cacheEntry = cacheDict[assetKey];
         if (
-            cacheEntry &&
+            (cacheEntry instanceof Object) &&
             (cacheEntry.writeTime + assetEntry.updateAfter * 86400000) > now
         ) {
             continue;
         }
         if (
-            fireNotification(
-                'before-asset-updated',
-                { assetKey: assetKey,  type: assetEntry.content }
-            ) === true
+            fireNotification('before-asset-updated', {
+                assetKey,
+                type: assetEntry.content
+            }) === true
         ) {
-            assetKeyToUpdate = assetKey;
-            break;
+            toUpdate.push(assetKey);
+            continue;
         }
         // This will remove a cached asset when it's no longer in use.
-        if (
-            cacheEntry &&
-            cacheEntry.readTime < assetCacheRegistryStartTime
-        ) {
+        if ( cacheEntry && cacheEntry.readTime < assetCacheRegistryStartTime ) {
             assetCacheRemove(assetKey);
         }
     }
-    if ( assetKeyToUpdate === undefined ) {
+    if ( toUpdate.length === 0 ) {
         return updateDone();
     }
-    updaterFetched.add(assetKeyToUpdate);
+    // https://github.com/uBlockOrigin/uBlock-issues/issues/1165
+    //   Update most obsolete asset first.
+    toUpdate.sort((a, b) => {
+        const ta = cacheDict[a] !== undefined ? cacheDict[a].writeTime : 0;
+        const tb = cacheDict[b] !== undefined ? cacheDict[b].writeTime : 0;
+        return ta - tb;
+    });
+    updaterFetched.add(toUpdate[0]);
 
-    const result = await getRemote(assetKeyToUpdate);
+    // In auto-update context, be gentle on remote servers.
+    remoteServerFriendly = updaterAuto;
+
+    const result = await getRemote(toUpdate[0]);
+
+    remoteServerFriendly = false;
+
     if ( result.content !== '' ) {
         updaterUpdated.push(result.assetKey);
         if ( result.assetKey === 'assets.json' ) {
@@ -909,10 +955,11 @@ const updateDone = function() {
 
 api.updateStart = function(details) {
     const oldUpdateDelay = updaterAssetDelay;
-    const newUpdateDelay = typeof details.delay === 'number' ?
-        details.delay :
-        updaterAssetDelayDefault;
+    const newUpdateDelay = typeof details.delay === 'number'
+        ? details.delay
+        : updaterAssetDelayDefault;
     updaterAssetDelay = Math.min(oldUpdateDelay, newUpdateDelay);
+    updaterAuto = details.auto === true;
     if ( updaterStatus !== undefined ) {
         if ( newUpdateDelay < oldUpdateDelay ) {
             clearTimeout(updaterTimer);

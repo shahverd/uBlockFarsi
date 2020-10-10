@@ -29,10 +29,12 @@
 
 /******************************************************************************/
 
-let popupFontSize = vAPI.localStorage.getItem('popupFontSize');
-if ( typeof popupFontSize === 'string' && popupFontSize !== 'unset' ) {
-    document.body.style.setProperty('font-size', popupFontSize);
-}
+let popupFontSize;
+vAPI.localStorage.getItemAsync('popupFontSize').then(value => {
+    if ( typeof value !== 'string' || value === 'unset' ) { return; }
+    document.body.style.setProperty('font-size', value);
+    popupFontSize = value;
+});
 
 // https://github.com/gorhill/uBlock/issues/3032
 // Popup panel can be in one of two modes:
@@ -48,13 +50,15 @@ if (
 }
 
 // https://github.com/chrisaljoudi/uBlock/issues/996
-// Experimental: mitigate glitchy popup UI: immediately set the firewall
-// pane visibility to its last known state. By default the pane is hidden.
-let dfPaneVisibleStored =
-    vAPI.localStorage.getItem('popupFirewallPane') === 'true';
-if ( dfPaneVisibleStored ) {
-    document.getElementById('panes').classList.add('dfEnabled');
-}
+//   Experimental: mitigate glitchy popup UI: immediately set the firewall
+//   pane visibility to its last known state. By default the pane is hidden.
+let dfPaneVisibleStored;
+vAPI.localStorage.getItemAsync('popupFirewallPane').then(value => {
+    dfPaneVisibleStored = value === true || value === 'true';
+    if ( dfPaneVisibleStored ) {
+        document.getElementById('panes').classList.add('dfEnabled');
+    }
+});
 
 /******************************************************************************/
 
@@ -296,11 +300,10 @@ const updateAllFirewallCells = function() {
 const buildAllFirewallRows = function() {
     // Do this before removing the rows
     if ( dfHotspots === null ) {
-        dfHotspots = uDom('#actionSelector')
-            .toggleClass('colorBlind', popupData.colorBlindFriendly)
-            .on('click', 'span', setFirewallRuleHandler);
+        dfHotspots =
+            uDom('#actionSelector').on('click', 'span', setFirewallRuleHandler);
     }
-    dfHotspots.detach();
+    dfHotspots.remove();
 
     // Update incrementally: reuse existing rows if possible.
     const rowContainer = document.getElementById('firewallContainer');
@@ -503,7 +506,7 @@ const renderPopup = function() {
 
     // https://github.com/chrisaljoudi/uBlock/issues/470
     // This must be done here, to be sure the popup is resized properly
-    const dfPaneVisible = popupData.dfEnabled;
+    const dfPaneVisible = (popupData.popupPanelSections & 0b10000) !== 0;
 
     // https://github.com/chrisaljoudi/uBlock/issues/1068
     // Remember the last state of the firewall pane. This allows to
@@ -514,12 +517,9 @@ const renderPopup = function() {
         vAPI.localStorage.setItem('popupFirewallPane', dfPaneVisibleStored);
     }
 
-    uDom.nodeFromId('panes').classList.toggle(
-        'dfEnabled',
-        dfPaneVisible === true
-    );
+    uDom.nodeFromId('panes').classList.toggle('dfEnabled', dfPaneVisible === true);
 
-    uDom.nodeFromId('firewallContainer').classList.toggle(
+    document.documentElement.classList.toggle(
         'colorBlind',
         popupData.colorBlindFriendly === true
     );
@@ -792,24 +792,24 @@ const gotoURL = function(ev) {
 /******************************************************************************/
 
 const toggleFirewallPane = function() {
-    popupData.dfEnabled = !popupData.dfEnabled;
+    popupData.popupPanelSections = popupData.popupPanelSections ^ 0b10000;
 
     messaging.send('popupPanel', {
         what: 'userSettings',
-        name: 'dynamicFilteringEnabled',
-        value: popupData.dfEnabled,
+        name: 'popupPanelSections',
+        value: popupData.popupPanelSections | 0b01111,
     });
 
     // https://github.com/chrisaljoudi/uBlock/issues/996
     // Remember the last state of the firewall pane. This allows to
     // configure the popup size early next time it is opened, which means a
     // less glitchy popup at open time.
-    dfPaneVisibleStored = popupData.dfEnabled;
+    dfPaneVisibleStored = (popupData.popupPanelSections & 0b10000) !== 0;
     vAPI.localStorage.setItem('popupFirewallPane', dfPaneVisibleStored);
 
     // Dynamic filtering pane may not have been built yet
-    uDom.nodeFromId('panes').classList.toggle('dfEnabled', popupData.dfEnabled);
-    if ( popupData.dfEnabled && dfPaneBuilt === false ) {
+    uDom.nodeFromId('panes').classList.toggle('dfEnabled', dfPaneVisibleStored);
+    if ( dfPaneVisibleStored && dfPaneBuilt === false ) {
         buildAllFirewallRows();
     }
 };
@@ -823,7 +823,7 @@ const mouseenterCellHandler = function() {
 };
 
 const mouseleaveCellHandler = function() {
-    dfHotspots.detach();
+    dfHotspots.remove();
 };
 
 /******************************************************************************/
@@ -847,6 +847,12 @@ const setFirewallRule = async function(src, des, type, action, persist) {
         action: action,
         persist: persist,
     });
+
+    // Remove action widget if an own rule has been set, this allows to click
+    // again immediately to remove the rule.
+    if ( action !== 0 ) {
+        dfHotspots.remove();
+    }
 
     cachePopupData(response);
     updateAllFirewallCells();
@@ -890,7 +896,7 @@ const setFirewallRuleHandler = function(ev) {
         action,
         ev.ctrlKey || ev.metaKey
     );
-    dfHotspots.detach();
+    dfHotspots.remove();
 };
 
 /******************************************************************************/
@@ -931,11 +937,8 @@ document.addEventListener(
 
 const expandExceptions = new Set();
 
-(( ) => {
+vAPI.localStorage.getItemAsync('popupExpandExceptions').then(exceptions => {
     try {
-        const exceptions = JSON.parse(
-            vAPI.localStorage.getItem('popupExpandExceptions')
-        );
         if ( Array.isArray(exceptions) === false ) { return; }
         for ( const exception of exceptions ) {
             expandExceptions.add(exception);
@@ -943,13 +946,12 @@ const expandExceptions = new Set();
     }
     catch(ex) {
     }
-
-})();
+});
 
 const saveExpandExceptions = function() {
     vAPI.localStorage.setItem(
         'popupExpandExceptions',
-        JSON.stringify(Array.from(expandExceptions))
+        Array.from(expandExceptions)
     );
 };
 
@@ -1071,7 +1073,7 @@ const toggleHostnameSwitch = async function(ev) {
         hostname: popupData.pageHostname,
         state: target.classList.contains('on'),
         tabId: popupData.tabId,
-        persist: popupData.dfEnabled === false || ev.ctrlKey || ev.metaKey,
+        persist: (popupData.popupPanelSections & 0b10000) === 0 || ev.ctrlKey || ev.metaKey,
     });
 
     cachePopupData(response);

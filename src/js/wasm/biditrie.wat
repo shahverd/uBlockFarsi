@@ -606,9 +606,9 @@
         i32.const 1
         i32.add
         tee_local $haystackLeft
-        ;; if ( haystackLeft === haystackEnd ) { break; }
+        ;; if ( haystackLeft > haystackEnd ) { break; }
         get_local $haystackEnd
-        i32.eq
+        i32.gt_u
         br_if $fail
         br $mainLoop
     ;; }
@@ -639,6 +639,13 @@
     (local $i i32)
     (local $j i32)
     (local $c0 i32)
+    ;; if ( needleLen === 0 ) { return haystackBeg; }
+    get_local $needleLen
+    i32.eqz
+    if
+        get_local $haystackBeg
+        return
+    end
     block $fail
     block $succeed
     ;; let haystackLeft = haystackEnd - needleLen;

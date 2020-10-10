@@ -41,6 +41,15 @@
 
 const µb = µBlock;
 
+const clickToLoad = function(request, sender) {
+    const { tabId, frameId } = µb.getMessageSenderDetails(sender);
+    if ( tabId === undefined || frameId === undefined ) { return false; }
+    const pageStore = µb.pageStoreFromTabId(tabId);
+    if ( pageStore === null ) { return false; }
+    pageStore.clickToLoad(frameId, request.frameURL);
+    return true;
+};
+
 const getDomainNames = function(targets) {
     const µburi = µb.URI;
     return targets.map(target => {
@@ -56,10 +65,10 @@ const onMessage = function(request, sender, callback) {
     switch ( request.what ) {
     case 'getAssetContent':
         // https://github.com/chrisaljoudi/uBlock/issues/417
-        µb.assets.get(
-            request.url,
-            { dontCache: true, needSourceURL: true }
-        ).then(result => {
+        µb.assets.get(request.url, {
+            dontCache: true,
+            needSourceURL: true,
+        }).then(result => {
             callback(result);
         });
         return;
@@ -93,11 +102,15 @@ const onMessage = function(request, sender, callback) {
     }
 
     // Sync
-    var response;
+    let response;
 
     switch ( request.what ) {
     case 'applyFilterListSelection':
         response = µb.applyFilterListSelection(request);
+        break;
+
+    case 'clickToLoad':
+        response = clickToLoad(request, sender);
         break;
 
     case 'createUserFilter':
@@ -157,6 +170,13 @@ const onMessage = function(request, sender, callback) {
 
     case 'toggleHostnameSwitch':
         µb.toggleHostnameSwitch(request);
+        break;
+
+    case 'uiStyles':
+        response = {
+            uiStyles: µb.hiddenSettings.uiStyles,
+            uiTheme: µb.hiddenSettings.uiTheme,
+        };
         break;
 
     case 'userSettings':
@@ -264,17 +284,19 @@ const getFirewallRules = function(srcHostname, desHostnames) {
 const popupDataFromTabId = function(tabId, tabTitle) {
     const tabContext = µb.tabContextManager.mustLookup(tabId);
     const rootHostname = tabContext.rootHostname;
+    const µbus = µb.userSettings;
+    const µbhs = µb.hiddenSettings;
     const r = {
-        advancedUserEnabled: µb.userSettings.advancedUserEnabled,
+        advancedUserEnabled: µbus.advancedUserEnabled,
         appName: vAPI.app.name,
         appVersion: vAPI.app.version,
-        colorBlindFriendly: µb.userSettings.colorBlindFriendly,
+        colorBlindFriendly: µbus.colorBlindFriendly,
         cosmeticFilteringSwitch: false,
-        dfEnabled: µb.userSettings.dynamicFilteringEnabled,
-        firewallPaneMinimized: µb.userSettings.firewallPaneMinimized,
+        firewallPaneMinimized: µbus.firewallPaneMinimized,
         globalAllowedRequestCount: µb.localSettings.allowedRequestCount,
         globalBlockedRequestCount: µb.localSettings.blockedRequestCount,
-        fontSize: µb.hiddenSettings.popupFontSize,
+        fontSize: µbhs.popupFontSize,
+        godMode: µbhs.filterAuthorMode,
         netFilteringSwitch: false,
         rawURL: tabContext.rawURL,
         pageURL: tabContext.normalURL,
@@ -283,10 +305,18 @@ const popupDataFromTabId = function(tabId, tabTitle) {
         pageAllowedRequestCount: 0,
         pageBlockedRequestCount: 0,
         popupBlockedCount: 0,
+        popupPanelSections: µbus.popupPanelSections,
+        popupPanelDisabledSections: µbhs.popupPanelDisabledSections,
+        popupPanelLockedSections: µbhs.popupPanelLockedSections,
+        popupPanelHeightMode: µbhs.popupPanelHeightMode,
         tabId: tabId,
         tabTitle: tabTitle,
-        tooltipsDisabled: µb.userSettings.tooltipsDisabled
+        tooltipsDisabled: µbus.tooltipsDisabled
     };
+
+    if ( µbhs.uiPopupConfig !== 'undocumented' ) {
+        r.uiPopupConfig = µbhs.uiPopupConfig;
+    }
 
     const pageStore = µb.pageStoreFromTabId(tabId);
     if ( pageStore ) {
@@ -509,11 +539,16 @@ vAPI.messaging.listen({
 const µb = µBlock;
 
 const retrieveContentScriptParameters = function(senderDetails, request) {
-    const { url, tabId, frameId } = senderDetails;
-    if ( url === undefined || tabId === undefined || frameId === undefined ) {
+    if ( µb.readyToFilter !== true ) { return; }
+    const { url: senderURL, tabId, frameId } = senderDetails;
+    if (
+        tabId === undefined ||
+        frameId === undefined ||
+        senderURL === undefined ||
+        senderURL !== request.url && senderURL.startsWith('about:') === false
+    ) {
         return;
     }
-    if ( request.url !== url ) { return; }
     const pageStore = µb.pageStoreFromTabId(tabId);
     if ( pageStore === null || pageStore.getNetFilteringSwitch() === false ) {
         return;
@@ -532,8 +567,8 @@ const retrieveContentScriptParameters = function(senderDetails, request) {
     //   `generichide` must be evaluated in the frame context.
     if ( noCosmeticFiltering === false ) {
         const genericHide =
-            µb.staticNetFilteringEngine.matchStringElementHide(
-                'generic',
+            µb.staticNetFilteringEngine.matchStringReverse(
+                'generichide',
                 request.url
             );
         response.noGenericCosmeticFiltering = genericHide === 2;
@@ -559,8 +594,8 @@ const retrieveContentScriptParameters = function(senderDetails, request) {
     //   Add support for `specifichide`.
     if ( noCosmeticFiltering === false ) {
         const specificHide =
-            µb.staticNetFilteringEngine.matchStringElementHide(
-                'specific',
+            µb.staticNetFilteringEngine.matchStringReverse(
+                'specifichide',
                 request.url
             );
         response.noSpecificCosmeticFiltering = specificHide === 2;
@@ -692,41 +727,6 @@ const onMessage = function(request, sender, callback) {
 
     // Async
     switch ( request.what ) {
-    case 'elementPickerArguments':
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'epicker.html', true);
-        xhr.overrideMimeType('text/html;charset=utf-8');
-        xhr.responseType = 'text';
-        xhr.onload = function() {
-            this.onload = null;
-            var i18n = {
-                bidi_dir: document.body.getAttribute('dir'),
-                create: vAPI.i18n('pickerCreate'),
-                pick: vAPI.i18n('pickerPick'),
-                quit: vAPI.i18n('pickerQuit'),
-                preview: vAPI.i18n('pickerPreview'),
-                netFilters: vAPI.i18n('pickerNetFilters'),
-                cosmeticFilters: vAPI.i18n('pickerCosmeticFilters'),
-                cosmeticFiltersHint: vAPI.i18n('pickerCosmeticFiltersHint')
-            };
-            const reStrings = /\{\{(\w+)\}\}/g;
-            const replacer = function(a0, string) {
-                return i18n[string];
-            };
-
-            callback({
-                frameContent: this.responseText.replace(reStrings, replacer),
-                target: µb.epickerArgs.target,
-                mouse: µb.epickerArgs.mouse,
-                zap: µb.epickerArgs.zap,
-                eprom: µb.epickerArgs.eprom,
-            });
-
-            µb.epickerArgs.target = '';
-        };
-        xhr.send();
-        return;
-
     default:
         break;
     }
@@ -735,18 +735,16 @@ const onMessage = function(request, sender, callback) {
     let response;
 
     switch ( request.what ) {
-    case 'compileCosmeticFilterSelector':
-        response = µb.staticExtFilteringEngine.compileSelector(
-            request.selector
-        );
+    case 'elementPickerArguments':
+        response = {
+            target: µb.epickerArgs.target,
+            mouse: µb.epickerArgs.mouse,
+            zap: µb.epickerArgs.zap,
+            eprom: µb.epickerArgs.eprom,
+            pickerURL: vAPI.getURL(`/web_accessible_resources/epicker-ui.html${vAPI.warSecret()}`),
+        };
+        µb.epickerArgs.target = '';
         break;
-
-    // https://github.com/gorhill/uBlock/issues/3497
-    //   This needs to be removed once issue is fixed.
-    case 'createUserFilter':
-        µb.createUserFilters(request);
-        break;
-
     case 'elementPickerEprom':
         µb.epickerArgs.eprom = request;
         break;
@@ -776,6 +774,33 @@ vAPI.messaging.listen({
 {
 // >>>>> start of local scope
 
+const fromBase64 = function(encoded) {
+    if ( typeof encoded !== 'string' ) {
+        return Promise.resolve(encoded);
+    }
+    let u8array;
+    try {
+        u8array = µBlock.denseBase64.decode(encoded);
+    } catch(ex) {
+    }
+    return Promise.resolve(u8array !== undefined ? u8array : encoded);
+};
+
+const toBase64 = function(data) {
+    const value = data instanceof Uint8Array
+        ? µBlock.denseBase64.encode(data)
+        : data;
+    return Promise.resolve(value);
+};
+
+const compress = function(json) {
+    return µBlock.lz4Codec.encode(json, toBase64);
+};
+
+const decompress = function(encoded) {
+    return µBlock.lz4Codec.decode(encoded, fromBase64);
+};
+
 const onMessage = function(request, sender, callback) {
     // Cloud storage support is optional.
     if ( µBlock.cloudStorageSupported !== true ) {
@@ -797,12 +822,21 @@ const onMessage = function(request, sender, callback) {
         return;
 
     case 'cloudPull':
-        return vAPI.cloud.pull(request.datakey).then(result => {
+        request.decode = decompress;
+        return vAPI.cloud.pull(request).then(result => {
             callback(result);
         });
 
     case 'cloudPush':
-        return vAPI.cloud.push(request.datakey, request.data).then(result => {
+        if ( µBlock.hiddenSettings.cloudStorageCompression ) {
+            request.encode = compress;
+        }
+        return vAPI.cloud.push(request).then(result => {
+            callback(result);
+        });
+
+    case 'cloudUsed':
+        return vAPI.cloud.used(request.datakey).then(result => {
             callback(result);
         });
 
@@ -865,7 +899,7 @@ const backupUserData = async function() {
         version: vAPI.app.version,
         userSettings: µb.userSettings,
         selectedFilterLists: µb.selectedFilterLists,
-        hiddenSettings: µb.hiddenSettings,
+        hiddenSettings: µb.getModifiedHiddenSettings(),
         whitelist: µb.arrayFromWhitelist(µb.netWhitelist),
         // String representation eventually to be deprecated
         netWhitelist: µb.stringFromWhitelist(µb.netWhitelist),
@@ -896,7 +930,6 @@ const restoreUserData = async function(request) {
 
     // If we are going to restore all, might as well wipe out clean local
     // storages
-    vAPI.localStorage.removeItem('immediateHiddenSettings');
     await Promise.all([
         µb.cacheStorage.clear(),
         vAPI.storage.clear(),
@@ -907,12 +940,24 @@ const restoreUserData = async function(request) {
 
     // Restore user data
     vAPI.storage.set(userData.userSettings);
+
+    // Restore advanced settings.
     let hiddenSettings = userData.hiddenSettings;
     if ( hiddenSettings instanceof Object === false ) {
         hiddenSettings = µBlock.hiddenSettingsFromString(
             userData.hiddenSettingsString || ''
         );
     }
+    // Discard unknown setting or setting with default value.
+    for ( const key in hiddenSettings ) {
+        if (
+            µb.hiddenSettingsDefault.hasOwnProperty(key) === false ||
+            hiddenSettings[key] === µb.hiddenSettingsDefault[key]
+        ) {
+            delete hiddenSettings[key];
+        }
+    }
+
     // Whitelist directives can be represented as an array or as a
     // (eventually to be deprecated) string.
     let whitelist = userData.whitelist;
@@ -924,7 +969,7 @@ const restoreUserData = async function(request) {
         whitelist = userData.netWhitelist.split('\n');
     }
     vAPI.storage.set({
-        hiddenSettings: hiddenSettings,
+        hiddenSettings,
         netWhitelist: whitelist || [],
         dynamicFilteringString: userData.dynamicFilteringString || '',
         urlFilteringString: userData.urlFilteringString || '',
@@ -945,8 +990,6 @@ const restoreUserData = async function(request) {
 // Remove all stored data but keep global counts, people can become
 // quite attached to numbers
 const resetUserData = async function() {
-    vAPI.localStorage.removeItem('immediateHiddenSettings');
-
     await Promise.all([
         µb.cacheStorage.clear(),
         vAPI.storage.clear(),
@@ -1136,6 +1179,14 @@ const onMessage = function(request, sender, callback) {
         response = µb.canUpdateShortcuts;
         break;
 
+    case 'getAutoCompleteDetails':
+        response = {
+            redirectResources: µb.redirectEngine.getResourceDetails(),
+            preparseDirectiveTokens: µb.preparseDirectives.getTokens(),
+            preparseDirectiveHints: µb.preparseDirectives.getHints(),
+        };
+        break;
+
     case 'getRules':
         response = getRules();
         break;
@@ -1161,7 +1212,10 @@ const onMessage = function(request, sender, callback) {
         break;
 
     case 'readHiddenSettings':
-        response = µb.stringFromHiddenSettings();
+        response = {
+            current: µb.hiddenSettings,
+            default: µb.hiddenSettingsDefault,
+        };
         break;
 
     case 'restoreUserData':
@@ -1287,20 +1341,19 @@ const getURLFilteringData = function(details) {
 };
 
 const compileTemporaryException = function(filter) {
-    const match = /#@?#/.exec(filter);
-    if ( match === null ) { return; }
-    let selector = filter.slice(match.index + match[0].length).trim();
+    const parser = new vAPI.StaticFilteringParser();
+    parser.analyze(filter);
+    if ( parser.shouldDiscard() ) { return {}; }
+    let selector = parser.result.compiled;
     let session;
-    if ( selector.startsWith('+js') ) {
+    if ( (parser.flavorBits & parser.BITFlavorExtScriptlet) !== 0 ) {
         session = µb.scriptletFilteringEngine.getSession();
+    } else if ( (parser.flavorBits & parser.BITFlavorExtHTML) !== 0 ) {
+        session = µb.htmlFilteringEngine.getSession();
     } else {
-        if ( selector.startsWith('^') ) {
-            session = µb.htmlFilteringEngine.getSession();
-        } else {
-            session = µb.cosmeticFilteringEngine.getSession();
-        }
+        session = µb.cosmeticFilteringEngine.getSession();
     }
-    return { session, selector: session.compile(selector) };
+    return { session, selector };
 };
 
 const toggleTemporaryException = function(details) {
@@ -1565,10 +1618,6 @@ const onMessage = function(request, sender, callback) {
     let response;
 
     switch ( request.what ) {
-    case 'applyFilterListSelection':
-        response = µb.applyFilterListSelection(request);
-        break;
-
     case 'inlinescriptFound':
         if ( µb.logger.enabled && pageStore !== null ) {
             const fctxt = µb.filteringContext.duplicate();
@@ -1586,10 +1635,6 @@ const onMessage = function(request, sender, callback) {
         logCosmeticFilters(tabId, request);
         break;
 
-    case 'reloadAllFilters':
-        µb.loadFilterLists();
-        return;
-
     case 'securityPolicyViolation':
         response = logCSPViolations(pageStore, request);
         break;
@@ -1600,10 +1645,16 @@ const onMessage = function(request, sender, callback) {
         }
         break;
 
-    case 'subscriberData':
-        response = {
-            confirmStr: vAPI.i18n('subscriberConfirm')
-        };
+    case 'subscribeTo':
+        const url = encodeURIComponent(request.location);
+        const title = encodeURIComponent(request.title);
+        const hash = µb.selectedFilterLists.indexOf(request.location) !== -1
+            ? '#subscribed'
+            : '';
+        vAPI.tabs.open({
+            url: `/asset-viewer.html?url=${url}&title=${title}&subscribe=1${hash}`,
+            select: true,
+        });
         break;
 
     default:

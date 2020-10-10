@@ -75,8 +75,7 @@ vAPI.webextFlavor = {
             dispatch();
         });
         if ( browser.runtime.getURL('').startsWith('moz-extension://') ) {
-            soup.add('mozilla')
-                .add('firefox')
+            soup.add('firefox')
                 .add('user_stylesheet')
                 .add('html_filtering');
             flavor.major = 60;
@@ -85,29 +84,14 @@ vAPI.webextFlavor = {
     }
 
     // Synchronous -- order of tests is important
-    let match;
-    if ( (match = /\bEdge\/(\d+)/.exec(ua)) !== null ) {
-        flavor.major = parseInt(match[1], 10) || 0;
-        soup.add('microsoft').add('edge');
-    } else if ( (match = /\bOPR\/(\d+)/.exec(ua)) !== null ) {
-        const reEx = /\bChrom(?:e|ium)\/([\d.]+)/;
-        if ( reEx.test(ua) ) { match = reEx.exec(ua); }
-        flavor.major = parseInt(match[1], 10) || 0;
-        soup.add('opera').add('chromium');
-    } else if ( (match = /\bChromium\/(\d+)/.exec(ua)) !== null ) {
-        flavor.major = parseInt(match[1], 10) || 0;
+    const match = /\bChrom(?:e|ium)\/([\d.]+)/.exec(ua);
+    if ( match !== null ) {
         soup.add('chromium');
-    } else if ( (match = /\bChrome\/(\d+)/.exec(ua)) !== null ) {
         flavor.major = parseInt(match[1], 10) || 0;
-        soup.add('google').add('chromium');
-    } else if ( (match = /\bSafari\/(\d+)/.exec(ua)) !== null ) {
-        flavor.major = parseInt(match[1], 10) || 0;
-        soup.add('apple').add('safari');
-    }
-
-    // https://github.com/gorhill/uBlock/issues/3588
-    if ( soup.has('chromium') && flavor.major >= 66 ) {
-        soup.add('user_stylesheet');
+        // https://github.com/gorhill/uBlock/issues/3588
+        if ( flavor.major >= 66 ) {
+            soup.add('user_stylesheet');
+        }
     }
 
     // Don't starve potential listeners
@@ -150,7 +134,7 @@ vAPI.webextFlavor = {
     };
 
     const reHostnameFromNetworkURL =
-        /^(?:http|ws|ftp)s?:\/\/([0-9a-z_][0-9a-z._-]*[0-9a-z])\//;
+        /^(?:http|ws|ftp)s?:\/\/([0-9a-z_][0-9a-z._-]*[0-9a-z])(?::\d+)?\//;
 
     vAPI.hostnameFromNetworkURL = function(url) {
         const matches = reHostnameFromNetworkURL.exec(url);
@@ -216,41 +200,38 @@ vAPI.closePopup = function() {
 
 // A localStorage-like object which should be accessible from the
 // background page or auxiliary pages.
-// This storage is optional, but it is nice to have, for a more polished user
-// experience.
-
-// https://github.com/gorhill/uBlock/issues/2824
-//   Use a dummy localStorage if for some reasons it's not available.
-
-// https://github.com/gorhill/uMatrix/issues/840
-//   Always use a wrapper to seamlessly handle exceptions
+//
+// https://github.com/uBlockOrigin/uBlock-issues/issues/899
+//   Convert into asynchronous access API.
 
 vAPI.localStorage = {
     clear: function() {
-        try {
-            window.localStorage.clear();
-        } catch(ex) {
-        }
+        vAPI.messaging.send('vapi', {
+            what: 'localStorage',
+            fn: 'clear',
+        });
     },
-    getItem: function(key) {
-        try {
-            return window.localStorage.getItem(key);
-        } catch(ex) {
-        }
-        return null;
+    getItemAsync: function(key) {
+        return vAPI.messaging.send('vapi', {
+            what: 'localStorage',
+            fn: 'getItemAsync',
+            args: [ key ],
+        });
     },
     removeItem: function(key) {
-        try {
-            window.localStorage.removeItem(key);
-        } catch(ex) {
-        }
+        return vAPI.messaging.send('vapi', {
+            what: 'localStorage',
+            fn: 'removeItem',
+            args: [ key ],
+        });
     },
-    setItem: function(key, value) {
-        try {
-            window.localStorage.setItem(key, value);
-        } catch(ex) {
-        }
-    }
+    setItem: function(key, value = undefined) {
+        return vAPI.messaging.send('vapi', {
+            what: 'localStorage',
+            fn: 'setItem',
+            args: [ key, value ]
+        });
+    },
 };
 
 
