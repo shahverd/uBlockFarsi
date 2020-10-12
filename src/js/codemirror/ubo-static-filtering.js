@@ -177,6 +177,56 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
         return null;
     };
 
+    const colorNetOptionValueSpan = function(stream, bits) {
+        const { pos, string } = stream;
+        let style;
+        // Warn about unknown redirect tokens.
+        if (
+            string.charCodeAt(pos - 1) === 0x3D /* '=' */ &&
+            /[$,]redirect(-rule)?=$/.test(string.slice(0, pos))
+        ) {
+            style = 'value';
+            let end = parser.skipUntil(
+                parserSlot,
+                parser.commentSpan.i,
+                parser.BITComma
+            );
+            const token = parser.strFromSlices(parserSlot, end - 3);
+            if ( redirectNames.has(token) === false ) {
+                style += ' warning';
+            }
+            stream.pos += token.length;
+            parserSlot = end;
+            return style;
+        }
+        if ( (bits & parser.BITTilde) !== 0 ) {
+            style = 'keyword strong';
+        } else if ( (bits & parser.BITPipe) !== 0 ) {
+            style = 'def';
+        }
+        stream.pos += parser.slices[parserSlot+2];
+        parserSlot += 3;
+        return style || 'value';
+    };
+
+    const colorNetOptionSpan = function(stream) {
+        const bits = parser.slices[parserSlot];
+        let style;
+        if ( (bits & parser.BITComma) !== 0  ) {
+            style = 'def strong';
+            netOptionValueMode = false;
+        } else if ( netOptionValueMode ) {
+            return colorNetOptionValueSpan(stream, bits);
+        } else if ( (bits & parser.BITTilde) !== 0 ) {
+            style = 'keyword strong';
+        } else if ( (bits & parser.BITEqual) !== 0 ) {
+            netOptionValueMode = true;
+        }
+        stream.pos += parser.slices[parserSlot+2];
+        parserSlot += 3;
+        return style || 'def';
+    };
+
     const colorNetSpan = function(stream) {
         if ( parserSlot < parser.exceptionSpan.i ) {
             stream.pos += parser.slices[parserSlot+2];
@@ -236,23 +286,7 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
             parserSlot >= parser.optionsSpan.i &&
             parserSlot < parser.commentSpan.i
         ) {
-            const bits = parser.slices[parserSlot];
-            let style;
-            if ( (bits & parser.BITComma) !== 0  ) {
-                style = 'def strong';
-                netOptionValueMode = false;
-            } else if ( (bits & parser.BITTilde) !== 0 ) {
-                style = 'keyword strong';
-            } else if ( (bits & parser.BITPipe) !== 0 ) {
-                style = 'def';
-            } else if ( netOptionValueMode ) {
-                style = 'value';
-            } else if ( (bits & parser.BITEqual) !== 0 ) {
-                netOptionValueMode = true;
-            }
-            stream.pos += parser.slices[parserSlot+2];
-            parserSlot += 3;
-            return style || 'def';
+            return colorNetOptionSpan(stream);
         }
         if (
             parserSlot >= parser.commentSpan.i &&
@@ -578,16 +612,24 @@ CodeMirror.registerHelper('fold', 'ubo-static-filtering', (( ) => {
                 return Pass;
             }
         }
-        const s = cm.getLine(line);
 
-        // Select URL
-        let lmatch = /\bhttps?:\/\/\S+$/.exec(s.slice(0, ch));
-        let rmatch = /^\S+/.exec(s.slice(ch));
+        const s = cm.getLine(line);
+        const token = cm.getTokenTypeAt(pos);
+        let lmatch, rmatch;
+        let select = false;
+
+        // Select URL in comments
+        if ( token === 'comment link' ) {
+            lmatch = /\S+$/.exec(s.slice(0, ch));
+            rmatch = /^\S+/.exec(s.slice(ch));
+            select = lmatch !== null && rmatch !== null &&
+                     /^https?:\/\//.test(s.slice(lmatch.index));
+        }
 
         // TODO: add more convenient word-matching cases here
-        // if ( lmatch === null || rmatch === null ) { ... }
+        // if ( select === false ) { ... }
 
-        if ( lmatch === null || rmatch === null ) { return Pass; }
+        if ( select === false ) { return Pass; }
         cm.setSelection(
             { line, ch: lmatch.index },
             { line, ch: ch + rmatch.index + rmatch[0].length }
