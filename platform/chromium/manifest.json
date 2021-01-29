@@ -1,5 +1,5 @@
 {
-  "author": "Mostafa Shahverdy and All uBlock Origin contributors",
+  "author": "Mostafa Shahverdy and all uBlock Origin contributors",
   "background": {
     "page": "background.html"
   },
@@ -71,7 +71,7 @@
   "incognito": "split",
   "manifest_version": 2,
   "minimum_chrome_version": "55.0",
-  "name": "uBlock Origin",
+  "name": "Farsi for uBlock Origin",
   "options_ui": {
     "page": "dashboard.html",
     "open_in_tab": true
