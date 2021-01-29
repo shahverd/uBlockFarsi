@@ -433,21 +433,28 @@
         }
         return true;
     };
+    const pruner = function(o) {
+        if ( log !== undefined ) {
+            const json = JSON.stringify(o, null, 2);
+            if ( reLogNeedle.test(json) ) {
+                log('uBO:', location.hostname, json);
+            }
+            return o;
+        }
+        if ( mustProcess(o) === false ) { return o; }
+        for ( const path of prunePaths ) {
+            findOwner(o, path, true);
+        }
+        return o;
+    };
     JSON.parse = new Proxy(JSON.parse, {
         apply: function() {
-            const r = Reflect.apply(...arguments);
-            if ( log !== undefined ) {
-                const json = JSON.stringify(r, null, 2);
-                if ( reLogNeedle.test(json) ) {
-                    log('uBO:', location.hostname, json);
-                }
-                return r;
-            }
-            if ( mustProcess(r) === false ) { return r; }
-            for ( const path of prunePaths ) {
-                findOwner(r, path, true);
-            }
-            return r;
+            return pruner(Reflect.apply(...arguments));
+        },
+    });
+    Response.prototype.json = new Proxy(Response.prototype.json, {
+        apply: function() {
+            return Reflect.apply(...arguments).then(o => pruner(o));
         },
     });
 })();
@@ -461,40 +468,40 @@
 //      to match all.
 // delayMatcher
 //      The delay matcher, an integer, defaults to 1000.
+//      Use `*` to match any delay.
 // boostRatio - The delay multiplier when there is a match, 0.5 speeds up by
 //      2 times and 2 slows down by 2 times, defaults to 0.05 or speed up
 //      20 times. Speed up and down both cap at 50 times.
 /// nano-setInterval-booster.js
 /// alias nano-sib.js
 (function() {
-    let needle = '{{1}}';
-    let delay = parseInt('{{2}}', 10);
-    let boost = parseFloat('{{3}}');
-    if ( needle === '' || needle === '{{1}}' ) {
-        needle = '.?';
-    } else if ( needle.charAt(0) === '/' && needle.slice(-1) === '/' ) {
-        needle = needle.slice(1, -1);
+    let needleArg = '{{1}}';
+    if ( needleArg === '{{1}}' ) { needleArg = ''; }
+    let delayArg = '{{2}}';
+    if ( delayArg === '{{2}}' ) { delayArg = ''; }
+    let boostArg = '{{3}}';
+    if ( boostArg === '{{3}}' ) { boostArg = ''; }
+    if ( needleArg === '' ) {
+        needleArg = '.?';
+    } else if ( needleArg.charAt(0) === '/' && needleArg.slice(-1) === '/' ) {
+        needleArg = needleArg.slice(1, -1);
     } else {
-        needle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        needleArg = needleArg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
-    needle = new RegExp(needle);
-    if ( isNaN(delay) || !isFinite(delay) ) {
-        delay = 1000;
-    }
-    if ( isNaN(boost) || !isFinite(boost) ) {
-        boost = 0.05;
-    }
-    if ( boost < 0.02 ) {
-        boost = 0.02;
-    }
-    if ( boost > 50 ) {
-        boost = 50;
-    }
-    window.setInterval = new Proxy(window.setInterval, {
+    const reNeedle = new RegExp(needleArg);
+    let delay = delayArg !== '*' ? parseInt(delayArg, 10) : -1;
+    if ( isNaN(delay) || isFinite(delay) === false ) { delay = 1000; }
+    let boost = parseFloat(boostArg);
+    boost = isNaN(boost) === false && isFinite(boost)
+        ? Math.min(Math.max(boost, 0.02), 50)
+        : 0.05;
+    self.setInterval = new Proxy(self.setInterval, {
         apply: function(target, thisArg, args) {
-            const a = args[0];
-            const b = args[1];
-            if ( b === delay && needle.test(a.toString()) ) {
+            const [ a, b ] = args;
+            if (
+                (delay === -1 || b === delay) &&
+                reNeedle.test(a.toString())
+            ) {
                 args[1] = b * boost;
             }
             return target.apply(thisArg, args);
@@ -512,40 +519,40 @@
 //      to match all.
 // delayMatcher
 //      The delay matcher, an integer, defaults to 1000.
+//      Use `*` to match any delay.
 // boostRatio - The delay multiplier when there is a match, 0.5 speeds up by
 //      2 times and 2 slows down by 2 times, defaults to 0.05 or speed up
 //      20 times. Speed up and down both cap at 50 times.
 /// nano-setTimeout-booster.js
 /// alias nano-stb.js
 (function() {
-    let needle = '{{1}}';
-    let delay = parseInt('{{2}}', 10);
-    let boost = parseFloat('{{3}}');
-    if ( needle === '' || needle === '{{1}}' ) {
-        needle = '.?';
-    } else if ( needle.startsWith('/') && needle.endsWith('/') ) {
-        needle = needle.slice(1, -1);
+    let needleArg = '{{1}}';
+    if ( needleArg === '{{1}}' ) { needleArg = ''; }
+    let delayArg = '{{2}}';
+    if ( delayArg === '{{2}}' ) { delayArg = ''; }
+    let boostArg = '{{3}}';
+    if ( boostArg === '{{3}}' ) { boostArg = ''; }
+    if ( needleArg === '' ) {
+        needleArg = '.?';
+    } else if ( needleArg.charAt(0) === '/' && needleArg.slice(-1) === '/' ) {
+        needleArg = needleArg.slice(1, -1);
     } else {
-        needle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        needleArg = needleArg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
-    needle = new RegExp(needle);
-    if ( isNaN(delay) || !isFinite(delay) ) {
-        delay = 1000;
-    }
-    if ( isNaN(boost) || !isFinite(boost) ) {
-        boost = 0.05;
-    }
-    if ( boost < 0.02 ) {
-        boost = 0.02;
-    }
-    if ( boost > 50 ) {
-        boost = 50;
-    }
-    window.setTimeout = new Proxy(window.setTimeout, {
+    const reNeedle = new RegExp(needleArg);
+    let delay = delayArg !== '*' ? parseInt(delayArg, 10) : -1;
+    if ( isNaN(delay) || isFinite(delay) === false ) { delay = 1000; }
+    let boost = parseFloat(boostArg);
+    boost = isNaN(boost) === false && isFinite(boost)
+        ? Math.min(Math.max(boost, 0.02), 50)
+        : 0.05;
+    self.setTimeout = new Proxy(self.setTimeout, {
         apply: function(target, thisArg, args) {
-            const a = args[0];
-            const b = args[1];
-            if ( b === delay && needle.test(a.toString()) ) {
+            const [ a, b ] = args;
+            if (
+                (delay === -1 || b === delay) &&
+                reNeedle.test(a.toString())
+            ) {
                 args[1] = b * boost;
             }
             return target.apply(thisArg, args);
@@ -576,6 +583,78 @@
 })();
 
 
+/// no-fetch-if.js
+(function() {
+    let arg1 = '{{1}}';
+    if ( arg1 === '{{1}}' ) { arg1 = ''; }
+    const needles = [];
+    for ( const condition of arg1.split(/\s+/) ) {
+        if ( condition === '' ) { continue; }
+        const pos = condition.indexOf(':');
+        let key, value;
+        if ( pos !== -1 ) {
+            key = condition.slice(0, pos);
+            value = condition.slice(pos + 1);
+        } else {
+            key = 'url';
+            value = condition;
+        }
+        if ( value === '' ) {
+            value = '^';
+        } else if ( value.startsWith('/') && value.endsWith('/') ) {
+            value = value.slice(1, -1);
+        } else {
+            value = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        needles.push({ key, re: new RegExp(value) });
+    }
+    const log = needles.length === 0 ? console.log.bind(console) : undefined;
+    self.fetch = new Proxy(self.fetch, {
+        apply: function(target, thisArg, args) {
+            let proceed = true;
+            try {
+                let details;
+                if ( args[0] instanceof self.Request ) {
+                    details = args[0];
+                } else {
+                    details = Object.assign({ url: args[0] }, args[1]);
+                }
+                const props = new Map();
+                for ( const prop in details ) {
+                    let v = details[prop];
+                    if ( typeof v !== 'string' ) {
+                        try { v = JSON.stringify(v); }
+                        catch(ex) { }
+                    }
+                    if ( typeof v !== 'string' ) { continue; }
+                    props.set(prop, v);
+                }
+                if ( log !== undefined ) {
+                    const out = Array.from(props)
+                                     .map(a => `${a[0]}:${a[1]}`)
+                                     .join(' ');
+                    log(`uBO: fetch(${out})`);
+                }
+                proceed = needles.length === 0;
+                for ( const { key, re } of needles ) {
+                    if (
+                        props.has(key) === false ||
+                        re.test(props.get(key)) === false
+                    ) {
+                        proceed = true;
+                        break;
+                    }
+                }
+            } catch(ex) {
+            }
+            return proceed
+                ? Reflect.apply(target, thisArg, args)
+                : Promise.resolve(new Response());
+        }
+    });
+})();
+
+
 /// remove-attr.js
 /// alias ra.js
 (function() {
@@ -586,10 +665,10 @@
     if ( selector === '' || selector === '{{2}}' ) {
         selector = `[${tokens.join('],[')}]`;
     }
-    const rmattr = function(ev) {
-        if ( ev ) {
-            window.removeEventListener(ev.type, rmattr, true);
-        }
+    let behavior = '{{3}}';
+    let timer;
+    const rmattr = ( ) => {
+        timer = undefined;
         try {
             const nodes = document.querySelectorAll(selector);
             for ( const node of nodes ) {
@@ -600,10 +679,39 @@
         } catch(ex) {
         }
     };
-    if ( document.readyState === 'loading' ) {
-        window.addEventListener('DOMContentLoaded', rmattr, true);
-    } else {
+    const mutationHandler = mutations => {
+        if ( timer !== undefined ) { return; }
+        let skip = true;
+        for ( let i = 0; i < mutations.length && skip; i++ ) {
+            const { type, addedNodes, removedNodes } = mutations[i];
+            if ( type === 'attributes' ) { skip = false; }
+            for ( let j = 0; j < addedNodes.length && skip; j++ ) {
+                if ( addedNodes[j].nodeType === 1 ) { skip = false; break; }
+            }
+            for ( let j = 0; j < removedNodes.length && skip; j++ ) {
+                if ( removedNodes[j].nodeType === 1 ) { skip = false; break; }
+            }
+        }
+        if ( skip ) { return; }
+        timer = self.requestIdleCallback(rmattr, { timeout: 67 });
+    };
+    const start = ( ) => {
         rmattr();
+        if ( /\bstay\b/.test(behavior) === false ) { return; }
+        const observer = new MutationObserver(mutationHandler);
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: tokens,
+            childList: true,
+            subtree: true,
+        });
+    };
+    if ( document.readyState !== 'complete' && /\bcomplete\b/.test(behavior) ) {
+        self.addEventListener('load', start, { once: true });
+    } else if ( document.readyState === 'loading' ) {
+        self.addEventListener('DOMContentLoaded', start, { once: true });
+    } else {
+        start();
     }
 })();
 
@@ -636,36 +744,6 @@
     } else {
         rmclass();
     }
-})();
-
-
-/// requestAnimationFrame-if.js
-/// alias raf-if.js
-// Deprecated, use "no-requestAnimationFrame-if.js"
-(function() {
-    let needle = '{{1}}';
-    const not = needle.charAt(0) === '!';
-    if ( not ) { needle = needle.slice(1); }
-    if ( needle === '' || needle === '{{1}}' ) {
-        needle = '.?';
-    } else if ( needle.startsWith('/') && needle.endsWith('/') ) {
-        needle = needle.slice(1,-1);
-    } else {
-        needle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-    const log = needle === '.?' && not === false ? console.log : undefined;
-    needle = new RegExp(needle);
-    window.requestAnimationFrame = new Proxy(window.requestAnimationFrame, {
-        apply: function(target, thisArg, args) {
-            const a = String(args[0]);
-            if ( log !== undefined ) {
-                log('uBO: requestAnimationFrame("%s")', a);
-            } else if ( needle.test(a) === not ) {
-                args[0] = function(){};
-            }
-            return target.apply(thisArg, args);
-        }
-    });
 })();
 
 
@@ -746,6 +824,7 @@
         const odesc = Object.getOwnPropertyDescriptor(owner, prop);
         let prevGetter, prevSetter;
         if ( odesc instanceof Object ) {
+            if ( odesc.configurable === false ) { return; }
             if ( odesc.get instanceof Function ) {
                 prevGetter = odesc.get;
             }
@@ -819,32 +898,6 @@
 })();
 
 
-/// setInterval-defuser.js
-/// alias sid.js
-(function() {
-    let needle = '{{1}}';
-    const delay = parseInt('{{2}}', 10);
-    if ( needle === '' || needle === '{{1}}' ) {
-        needle = '.?';
-    } else if ( needle.startsWith('/') && needle.endsWith('/') ) {
-        needle = needle.slice(1,-1);
-    } else {
-        needle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-    needle = new RegExp(needle);
-    window.setInterval = new Proxy(window.setInterval, {
-        apply: function(target, thisArg, args) {
-            const a = args[0];
-            const b = args[1];
-            if ( (isNaN(delay) || b === delay) && needle.test(a.toString()) ) {
-                args[0] = function(){};
-            }
-            return target.apply(thisArg, args);
-        }
-    });
-})();
-
-
 /// no-setInterval-if.js
 /// alias nosiif.js
 (function() {
@@ -894,34 +947,9 @@
 })();
 
 
-/// setTimeout-defuser.js
-/// alias std.js
-(function() {
-    let needle = '{{1}}';
-    const delay = parseInt('{{2}}', 10);
-    if ( needle === '' || needle === '{{1}}' ) {
-        needle = '.?';
-    } else if ( needle.startsWith('/') && needle.endsWith('/') ) {
-        needle = needle.slice(1,-1);
-    } else {
-        needle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-    needle = new RegExp(needle);
-    window.setTimeout = new Proxy(window.setTimeout, {
-        apply: function(target, thisArg, args) {
-            const a = args[0];
-            const b = args[1];
-            if ( (isNaN(delay) || b === delay) && needle.test(a.toString()) ) {
-                args[0] = function(){};
-            }
-            return target.apply(thisArg, args);
-        }
-    });
-})();
-
-
 /// no-setTimeout-if.js
 /// alias nostif.js
+/// alias setTimeout-defuser.js
 (function() {
     let needle = '{{1}}';
     const needleNot = needle.charAt(0) === '!';

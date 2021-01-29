@@ -671,6 +671,10 @@
     "message": "permitido",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "modificado",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "petición del dominio",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "bytes",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Bloquear elemento en frame...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Permitir temporalmente elementos multimedia grandes",

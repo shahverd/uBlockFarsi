@@ -671,6 +671,10 @@
     "message": "అనుమతించబడింది",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "సవరించబడింది",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "మొదటి పార్టీ",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "బైట్లు",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "ఫ్రేమ్‌లో మూలకాన్ని బ్లాక్ చేయండి ...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "భారి దృశ్య/శ్రవణ అంశాలను తాత్కాలికంగా అనుమతించు",

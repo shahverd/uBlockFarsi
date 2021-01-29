@@ -340,8 +340,7 @@ FilterContainer.prototype.keyFromSelector = function(selector) {
 /******************************************************************************/
 
 FilterContainer.prototype.compile = function(parser, writer) {
-    // 1000 = cosmetic filtering
-    writer.select(1000);
+    writer.select(µb.compiledCosmeticSection);
 
     if ( parser.hasOptions() === false ) {
         this.compileGenericSelector(parser, writer);
@@ -551,8 +550,7 @@ FilterContainer.prototype.fromCompiledContent = function(reader, options) {
         return;
     }
 
-    // 1000 = cosmetic filtering
-    reader.select(1000);
+    reader.select(µb.compiledCosmeticSection);
 
     let db, bucket;
 
@@ -643,8 +641,7 @@ FilterContainer.prototype.fromCompiledContent = function(reader, options) {
 /******************************************************************************/
 
 FilterContainer.prototype.skipGenericCompiledContent = function(reader) {
-    // 1000 = cosmetic filtering
-    reader.select(1000);
+    reader.select(µb.compiledCosmeticSection);
 
     while ( reader.next() ) {
         this.acceptedCount += 1;
@@ -685,8 +682,7 @@ FilterContainer.prototype.skipGenericCompiledContent = function(reader) {
 /******************************************************************************/
 
 FilterContainer.prototype.skipCompiledContent = function(reader) {
-    // 1000 = cosmetic filtering
-    reader.select(1000);
+    reader.select(µb.compiledCosmeticSection);
 
     while ( reader.next() ) {
         this.acceptedCount += 1;
@@ -1084,7 +1080,9 @@ FilterContainer.prototype.retrieveSpecificSelectors = function(
     if ( injectedHideFilters.length !== 0 ) {
         out.injectedHideFilters = injectedHideFilters.join(',\n');
         details.code = out.injectedHideFilters + '\n{display:none!important;}';
-        vAPI.tabs.insertCSS(request.tabId, details);
+        if ( options.dontInject !== true ) {
+            vAPI.tabs.insertCSS(request.tabId, details);
+        }
     }
 
     // CSS selectors for collapsible blocked elements
@@ -1093,7 +1091,9 @@ FilterContainer.prototype.retrieveSpecificSelectors = function(
         cacheEntry.retrieve('net', networkFilters);
         if ( networkFilters.length !== 0 ) {
             details.code = networkFilters.join('\n') + '\n{display:none!important;}';
-            vAPI.tabs.insertCSS(request.tabId, details);
+            if ( options.dontInject !== true ) {
+                vAPI.tabs.insertCSS(request.tabId, details);
+            }
         }
     }
 
@@ -1125,12 +1125,13 @@ FilterContainer.prototype.benchmark = async function() {
     const options = {
         noCosmeticFiltering: false,
         noGenericCosmeticFiltering: false,
+        dontInject: true,
     };
     let count = 0;
     const t0 = self.performance.now();
     for ( let i = 0; i < requests.length; i++ ) {
         const request = requests[i];
-        if ( request.cpt !== 'document' ) { continue; }
+        if ( request.cpt !== 'main_frame' ) { continue; }
         count += 1;
         details.hostname = µb.URI.hostnameFromURI(request.url);
         details.domain = µb.URI.domainFromHostname(details.hostname);

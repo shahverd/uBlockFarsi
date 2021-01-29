@@ -120,7 +120,7 @@
     "description": "English: Enter element picker mode"
   },
   "popupTipLog": {
-    "message": "เปิดบันทึกการทำงาน",
+    "message": "เปิดแอปโทรศัพท์",
     "description": "Tooltip used for the logger icon in the panel"
   },
   "popupTipNoPopups": {
@@ -168,7 +168,7 @@
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts2": {
-    "message": "Click to no longer block remote fonts on this site",
+    "message": "คลิกเพื่อยกเลิกการบล็อกป๊อปอัปทั้งหมดในเว็บไซต์นี้",
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoScripting1": {
@@ -671,6 +671,10 @@
     "message": "allowed",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "modified",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "1st-party",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "bytes",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Block element in frame...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "อนุญาตองค์ประกอบชนิด Media ขนาดใหญ่ชั่วคราว",

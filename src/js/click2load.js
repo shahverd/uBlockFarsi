@@ -31,10 +31,16 @@
 if ( typeof vAPI !== 'object' ) { return; }
 
 const url = new URL(self.location.href);
-const frameURL = url.searchParams.get('url');
+const actualURL = url.searchParams.get('url');
+const frameURL = url.searchParams.get('aliasURL') || actualURL;
 const frameURLElem = document.getElementById('frameURL');
 
-frameURLElem.textContent = frameURL;
+frameURLElem.children[0].textContent = actualURL;
+
+frameURLElem.children[1].href = frameURL;
+frameURLElem.children[1].title = frameURL;
+
+document.body.setAttribute('title', actualURL);
 
 const onWindowResize = function() {
     document.body.style.width = `${self.innerWidth}px`;
@@ -47,7 +53,7 @@ self.addEventListener('resize', onWindowResize);
 
 document.body.addEventListener('click', ev => {
     if ( ev.isTrusted === false ) { return; }
-    //if ( ev.target === frameURLElem ) { return; }
+    if ( ev.target.closest('#frameURL') !== null ) { return; }
     vAPI.messaging.send('default', {
         what: 'clickToLoad',
         frameURL,

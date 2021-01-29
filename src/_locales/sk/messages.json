@@ -671,6 +671,10 @@
     "message": "povolené",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "zmenené",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "Z prvej strany",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "bajtov",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Zablokovať prvok v ráme…",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Dočasne povoliť veľké multimediálne prvky",

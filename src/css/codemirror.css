@@ -12,6 +12,9 @@
     height: 100%;
     width: 100%;
     }
+.CodeMirror-lines {
+    padding-bottom: 6rem;
+    }
 .CodeMirror-gutters {
     background-color: var(--cm-gutter-surface);
     border-color: var(--cm-gutter-border);
@@ -32,6 +35,17 @@
     }
 
 /* CodeMirror theme overrides */
+.CodeMirror-focused .CodeMirror-selected {
+    background: var(--cm-selection-surface);
+    color: var(--cm-selection-ink);
+    }
+.CodeMirror-line::selection,
+.CodeMirror-line > span::selection,
+.CodeMirror-line > span > span::selection {
+    background: var(--cm-selection-surface);
+    color: var(--cm-selection-ink);
+    }
+
 .cm-s-default .cm-comment {
     color: var(--sf-comment-ink);
     }
@@ -60,9 +74,9 @@
 .cm-s-default .cm-keyword {
     color: var(--sf-keyword-ink);
     }
-.cm-s-default .cm-regex {
+.cm-s-default .cm-notice {
     text-underline-position: under;
-    text-decoration-color: var(--sf-regex-ink);
+    text-decoration-color: var(--sf-notice-ink);
     text-decoration-style: solid;
     text-decoration-line: underline;
     }
@@ -76,6 +90,9 @@
 .cm-s-default .cm-warning {
     text-decoration: underline var(--sf-warning-ink);
     text-underline-position: under;
+    }
+.cm-s-default .cm-readonly {
+    color: var(--sf-readonly-ink);
     }
 
 /* Rules */
@@ -154,6 +171,7 @@ div.CodeMirror span.CodeMirror-matchingbracket {
     display: none;
     }
 .cm-searching {
+    background-color: var(--cm-searching-surface) !important;
     border: 1px dotted black;
     }
 

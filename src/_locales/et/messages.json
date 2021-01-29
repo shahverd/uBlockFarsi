@@ -671,6 +671,10 @@
     "message": "lubatud",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "muudetud",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "1. osapool",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "baiti",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Blokeeri raamis olev element...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Luba ajutiselt mahukad meediaelemendid",

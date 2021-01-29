@@ -671,6 +671,10 @@
     "message": "dopušteno",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "promijenjeno",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "Prve strane",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "bajtovi",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Blokiraj element u okviru...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Privremeno dopusti velike medijske elemente",

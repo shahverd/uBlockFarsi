@@ -671,6 +671,10 @@
     "message": "autorisée",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "Modifié",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "Domaine de la page",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "octets",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Bloquer un élément de cadre",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Autoriser temporairement le chargement d'éléments médias à taille plus importante",

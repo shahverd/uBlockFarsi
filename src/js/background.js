@@ -41,13 +41,13 @@ const µBlock = (( ) => { // jshint ignore:line
         autoCommentFilterTemplate: '{{date}} {{origin}}',
         autoUpdateAssetFetchPeriod: 120,
         autoUpdateDelayAfterLaunch: 180,
-        autoUpdatePeriod: 7,
+        autoUpdatePeriod: 4,
         benchmarkDatasetURL: 'unset',
-        blockingProfiles: '11111/#F00 11011/#C0F 11001/#00F 00001',
+        blockingProfiles: '11111/#F00 11010/#C0F 11001/#00F 00001',
         cacheStorageAPI: 'unset',
         cacheStorageCompression: true,
         cacheControlForFirefox1376932: 'no-cache, no-store, must-revalidate',
-        cloudStorageCompression: false,
+        cloudStorageCompression: true,
         cnameIgnoreList: 'unset',
         cnameIgnore1stParty: true,
         cnameIgnoreExceptions: true,
@@ -61,9 +61,10 @@ const µBlock = (( ) => { // jshint ignore:line
         debugScriptletInjector: false,
         disableWebAssembly: false,
         extensionUpdateForceReload: false,
+        filterAuthorMode: false,
+        filterOnHeaders: false,
         ignoreRedirectFilters: false,
         ignoreScriptInjectFilters: false,
-        filterAuthorMode: false,
         loggerPopupType: 'popup',
         manualUpdateAssetFetchPeriod: 500,
         popupFontSize: 'unset',
@@ -82,32 +83,38 @@ const µBlock = (( ) => { // jshint ignore:line
         userResourcesLocation: 'unset',
     };
 
+    const userSettingsDefault = {
+        advancedUserEnabled: false,
+        alwaysDetachLogger: true,
+        autoUpdate: true,
+        cloudStorageEnabled: false,
+        collapseBlocked: true,
+        colorBlindFriendly: false,
+        contextMenuEnabled: true,
+        dynamicFilteringEnabled: false,
+        externalLists: [],
+        firewallPaneMinimized: true,
+        hyperlinkAuditingDisabled: true,
+        ignoreGenericCosmeticFilters: vAPI.webextFlavor.soup.has('mobile'),
+        largeMediaSize: 50,
+        parseAllABPHideFilters: true,
+        popupPanelSections: 0b111,
+        prefetchingDisabled: true,
+        requestLogMaxEntries: 1000,
+        showIconBadge: true,
+        tooltipsDisabled: false,
+        webrtcIPAddressHidden: false,
+    };
+
     return {
-        userSettings: {
-            advancedUserEnabled: false,
-            alwaysDetachLogger: true,
-            autoUpdate: true,
-            cloudStorageEnabled: false,
-            collapseBlocked: true,
-            colorBlindFriendly: false,
-            contextMenuEnabled: true,
-            dynamicFilteringEnabled: false,
-            externalLists: [],
-            firewallPaneMinimized: true,
-            hyperlinkAuditingDisabled: true,
-            ignoreGenericCosmeticFilters: vAPI.webextFlavor.soup.has('mobile'),
-            largeMediaSize: 50,
-            parseAllABPHideFilters: true,
-            popupPanelSections: 0b111,
-            prefetchingDisabled: true,
-            requestLogMaxEntries: 1000,
-            showIconBadge: true,
-            tooltipsDisabled: false,
-            webrtcIPAddressHidden: false,
-        },
+        userSettingsDefault: userSettingsDefault,
+        userSettings: Object.assign({}, userSettingsDefault),
 
         hiddenSettingsDefault: hiddenSettingsDefault,
+        hiddenSettingsAdmin: {},
         hiddenSettings: Object.assign({}, hiddenSettingsDefault),
+
+        noDashboard: false,
 
         // Features detection.
         privacySettingsSupported: vAPI.browserSettings instanceof Object,
@@ -139,8 +146,8 @@ const µBlock = (( ) => { // jshint ignore:line
 
         // Read-only
         systemSettings: {
-            compiledMagic: 29,  // Increase when compiled format changes
-            selfieMagic: 29,    // Increase when selfie format changes
+            compiledMagic: 37,  // Increase when compiled format changes
+            selfieMagic: 37,    // Increase when selfie format changes
         },
 
         // https://github.com/uBlockOrigin/uBlock-issues/issues/759#issuecomment-546654501
@@ -152,6 +159,13 @@ const µBlock = (( ) => { // jshint ignore:line
         //   issue. It's just an attempt at hardening.
         compiledFormatChanged: false,
         selfieIsInvalid: false,
+
+        compiledNetworkSection: 100,
+        compiledCosmeticSection: 200,
+        compiledScriptletSection: 300,
+        compiledHTMLSection: 400,
+        compiledSentinelSection: 1000,
+        compiledBadSubsection: 1,
 
         restoreBackupSettings: {
             lastRestoreFile: '',

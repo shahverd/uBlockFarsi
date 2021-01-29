@@ -671,6 +671,10 @@
     "message": "дозволений",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "модифікований",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "основний",
     "description": "A keyword in the built-in row filtering expression"
@@ -856,7 +860,7 @@
     "description": "English: Contributors"
   },
   "aboutSourceCode": {
-    "message": "Джерельний код",
+    "message": "Вихідний код",
     "description": "Link text to source code repo"
   },
   "aboutTranslations": {
@@ -1023,6 +1027,10 @@
     "message": "байтів",
     "description": ""
   },
+  "contextMenuBlockElementInFrame": {
+    "message": "Заблокувати елемент у фреймі",
+    "description": "An entry in the browser's contextual menu"
+  },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Тимчасово дозволити великі медіа елементи",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
@@ -1064,7 +1072,7 @@
     "description": "short for 'gigabytes'"
   },
   "clickToLoad": {
-    "message": "Click to load",
+    "message": "Натисніть, щоб завантажити",
     "description": "Message used in frame placeholders"
   },
   "dummy": {

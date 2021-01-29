@@ -671,6 +671,10 @@
     "message": "të autorizuara",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "e modifikuar",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "palët kryesore",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "bajt",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Block element in frame...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Autorizoj përkohësisht elementet e mëdha multimediale",

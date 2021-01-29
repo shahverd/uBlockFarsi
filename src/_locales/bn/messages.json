@@ -552,7 +552,7 @@
     "description": "English: dynamic rule syntax and full documentation."
   },
   "rulesSort": {
-    "message": "Sort:",
+    "message": "সাজাও:",
     "description": "English: label for sort option."
   },
   "rulesSortByType": {
@@ -669,6 +669,10 @@
   },
   "loggerRowFiltererBuiltinAllowed": {
     "message": "অনুমোদিত",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "modified",
     "description": "A keyword in the built-in row filtering expression"
   },
   "loggerRowFiltererBuiltin1p": {
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "বাইট",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Block element in frame...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "সাময়িকভাবে বৃহৎ মিডিয়া উপাদান মঞ্জুরি দিন",

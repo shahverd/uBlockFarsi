@@ -671,6 +671,10 @@
     "message": "izinli",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "düzenlendi",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "1. taraf",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "byte",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Çerçevedeki ögeyi engelle...",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Geçici olarak büyük medya ögelerine izin ver",

@@ -105,7 +105,7 @@ DOMListFactory.nodeFromSelector = function(selector) {
             }
         }
         if ( response.uiStyles !== 'unset' ) {
-            document.body.style.cssText = response;
+            document.body.style.cssText = response.uiStyles;
         }
     });
 
@@ -118,9 +118,10 @@ DOMListFactory.nodeFromSelector = function(selector) {
     if ( window.matchMedia('(min-resolution: 150dpi)').matches ) {
         root.classList.add('hidpi');
     }
-    if ( window.matchMedia('(prefers-color-scheme: dark)').matches ) {
-        root.classList.add('dark');
-    }
+    // TODO: re-enable once there is a fully functional dark theme 
+    //if ( window.matchMedia('(prefers-color-scheme: dark)').matches ) {
+    //    root.classList.add('dark');
+    //}
 }
 
 /******************************************************************************/

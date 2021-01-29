@@ -671,6 +671,10 @@
     "message": "已允许",
     "description": "A keyword in the built-in row filtering expression"
   },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "已修改",
+    "description": "A keyword in the built-in row filtering expression"
+  },
   "loggerRowFiltererBuiltin1p": {
     "message": "第一方",
     "description": "A keyword in the built-in row filtering expression"
@@ -1022,6 +1026,10 @@
   "genericBytes": {
     "message": "字节",
     "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "屏蔽框架中的内容…",
+    "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "临时允许较大媒体元素",
