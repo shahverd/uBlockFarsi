@@ -1,6 +1,10 @@
-[![Build](https://travis-ci.org/gorhill/uBlock.svg?branch=master)](https://travis-ci.org/gorhill/uBlock)
+[![Commit rate](https://img.shields.io/github/commit-activity/m/gorhill/ublock?label=Commits)](https://github.com/gorhill/uBlock/commits/master)
+[![Issues](https://img.shields.io/github/issues/uBlockOrigin/uBlock-issues)](https://github.com/uBlockOrigin/uBlock-issues/issues)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/ublock/localized.svg)](https://crowdin.com/project/ublock)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/gorhill/uBlock/blob/master/LICENSE.txt)
+[![NPM](https://img.shields.io/npm/v/@gorhill/ubo-core)](https://www.npmjs.com/package/@gorhill/ubo-core)
+[![Mozilla Add-ons](https://img.shields.io/amo/rating/ublock-origin?label=Firefox)](https://addons.mozilla.org/firefox/addon/ublock-origin/)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/cjpalhdlnbpafiamejdnhcphjbkeiagm?label=Chrome)](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm)
 
 *** 
 
@@ -13,16 +17,6 @@ uBlock Origin
 <p align="center">
 <sup> <!-- Pronounciation -->
       pronounced <i>you-block origin</i> (<code>/ˈjuːˌblɒk/</code>) — <i>you</i> decide what enters your browser.
-</sup>
-<br>
-<sup> <!-- Languages -->
-      <img src="https://raw.githubusercontent.com/gorhill/uBlock/master/doc/img/languageicon-36.png" width="18" height="18">
-      <sup>
-            English,
-            <a href="https://github.com/fang5566/uBlock/blob/master/README.md#ublock-origin">Chinese (中文)</a>,
-            <a href="https://github.com/delightbot/uBlock/blob/master/README.md#ublock-origin">Korean (한국어)</a>,
-            <a href="https://github.com/ialexsilva/uBlock/blob/master/README.md#ublock-origin">Português (Brasil)</a>
-      </sup>
 </sup>
 <br>
 <sub><a href="https://github.com/gorhill/uBlock/wiki/uBlock-Origin-is-completely-unrelated-to-the-web-site-ublock.org"><b>BEWARE!</b> uBlock Origin is (and has always been) COMPLETELY UNRELATED to the web site <code>ublock.org</code></a>.</sub>
@@ -79,7 +73,7 @@ Ads, "unintrusive" or not, are just the visible portions of privacy-invading app
 
 _EasyList_, _EasyPrivacy_, _Peter Lowe's_, _Online Malicious URL Blocklist_ and uBO's own lists are enabled by default when you install uBlock Origin. Many more lists are readily available to block trackers, analytics, and more. Hosts files are also supported.
 
-Once you install uBlock Origin, you may easily un-select any of the pre-selected filter lists if you think uBlock Origin blocks too much. For reference, Adblock Plus installs with only _EasyList_ enabled by default.
+Once you install uBlock Origin, you may easily un-select any of the pre-selected filter lists if you think uBlock Origin blocks too much. For reference, Adblock Plus installs with only _EasyList_, _ABP filters_ and _Acceptable Ads_ enabled by default.
 
 ## Installation
 

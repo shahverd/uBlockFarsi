@@ -97,9 +97,12 @@ vAPI.messaging = {
     //   as world-ending, i.e. stay around. Except for embedded frames.
 
     disconnectListener: function() {
+        void browser.runtime.lastError;
         this.port = null;
         if ( window !== window.top ) {
             vAPI.shutdown.exec();
+        } else {
+            this.destroyPort();
         }
     },
     disconnectListenerBound: null,
@@ -129,11 +132,10 @@ vAPI.messaging = {
     messageListenerBound: null,
 
     canDestroyPort: function() {
-        return this.pending.size === 0 &&
-            (
-                this.extensions.length === 0 ||
-                this.extensions.every(e => e.canDestroyPort())
-            );
+        return this.pending.size === 0 && (
+            this.extensions.length === 0 ||
+            this.extensions.every(e => e.canDestroyPort())
+        );
     },
 
     mustDestroyPort: function() {
@@ -230,14 +232,16 @@ vAPI.messaging = {
     },
 
     // Dynamically extend capabilities.
+    //
+    // https://github.com/uBlockOrigin/uBlock-issues/issues/1571
+    //   Don't use `self` to access `vAPI`.
     extend: function() {
         if ( this.extended === undefined ) {
             this.extended = vAPI.messaging.send('vapi', {
                 what: 'extendClient'
-            }).then(( ) => {
-                return self.vAPI instanceof Object &&
-                       this.extensions.length !== 0;
-            }).catch(( ) => {
+            }).then(( ) =>
+                typeof vAPI === 'object' && this.extensions.length !== 0
+            ).catch(( ) => {
             });
         }
         return this.extended;

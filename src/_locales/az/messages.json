@@ -228,7 +228,7 @@
     "description": ""
   },
   "popupImageRulePrompt": {
-    "message": "şəkillər",
+    "message": "təsvirlər",
     "description": ""
   },
   "popup3pAnyRulePrompt": {
@@ -236,7 +236,7 @@
     "description": ""
   },
   "popup3pPassiveRulePrompt": {
-    "message": "3-cü tərəf CSS/şəkillər",
+    "message": "3-cü tərəf CSS/təsvirlər",
     "description": ""
   },
   "popupInlineScriptRulePrompt": {
@@ -267,6 +267,14 @@
     "message": "Versiya",
     "description": "Example of use: Version 1.26.4"
   },
+  "popup3pScriptFilterTip": {
+    "message": "↑: Emphasize rows which have 3rd-party scripts",
+    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  },
+  "popup3pFrameFilterTip": {
+    "message": "↑: Emphasize rows which have 3rd-party frames",
+    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  },
   "pickerCreate": {
     "message": "Yarat",
     "description": "English: Create"
@@ -276,11 +284,11 @@
     "description": "English: Pick"
   },
   "pickerQuit": {
-    "message": "Çıx",
+    "message": "Çıxış",
     "description": "English: Quit"
   },
   "pickerPreview": {
-    "message": "İlkin baxış",
+    "message": "Önbaxış",
     "description": "Element picker preview mode: will cause the elements matching the current filter to be removed from the page"
   },
   "pickerNetFilters": {
@@ -304,7 +312,7 @@
     "description": "English: Hide placeholders of blocked elements"
   },
   "settingsIconBadgePrompt": {
-    "message": "Əngəllənmiş sorğuların sayını piktoqramda göstər",
+    "message": "Əngəllənən tələb sayını nişan üstündə göstər",
     "description": "English: Show the number of blocked requests on the icon"
   },
   "settingsTooltipsPrompt": {
@@ -370,6 +378,10 @@
   "settingsNoCSPReportsPrompt": {
     "message": "CSP hesabatlarını əngəllə",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
+  },
+  "settingsUncloakCnamePrompt": {
+    "message": "Uncloak canonical names",
+    "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
   },
   "settingsLastRestorePrompt": {
     "message": "Son bərpa əməliyyatının tarixi:",
@@ -835,6 +847,10 @@
     "message": "Nişanlı",
     "description": "Label for radio-button to pick export text format"
   },
+  "aboutPrivacyPolicy": {
+    "message": "Privacy policy",
+    "description": "Link to privacy policy on GitHub (English)"
+  },
   "aboutChangelog": {
     "message": "Dəyişikliklər siyahısı",
     "description": ""
@@ -873,6 +889,14 @@
   },
   "aboutDependencies": {
     "message": "Xarici asılılıqlar (GPLv3-uyumlu):",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNs": {
+    "message": "uBO's own filter lists are freely hosted on the following <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDNs</a>:",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNsInfo": {
+    "message": "A randomly picked CDN is used when a filter list needs to be updated",
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
@@ -1031,6 +1055,10 @@
     "message": "Block element in frame...",
     "description": "An entry in the browser's contextual menu"
   },
+  "contextMenuSubscribeToList": {
+    "message": "Subscribe to filter list...",
+    "description": "An entry in the browser's contextual menu"
+  },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Böyük media elementlərinin yüklənməsinə müvəqqəti icazə ver",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
@@ -1072,7 +1100,7 @@
     "description": "short for 'gigabytes'"
   },
   "clickToLoad": {
-    "message": "Yükləmək üçün kliklə",
+    "message": "Yükləmək üçün düyməyə bas",
     "description": "Message used in frame placeholders"
   },
   "dummy": {

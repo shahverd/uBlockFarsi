@@ -25,32 +25,19 @@
 
 /******************************************************************************/
 
+import {
+    domainFromHostname,
+    hostnameFromNetworkURL,
+} from './uri-utils.js';
+
+/******************************************************************************/
+
 (( ) => {
     // https://github.com/uBlockOrigin/uBlock-issues/issues/407
     if ( vAPI.webextFlavor.soup.has('firefox') === false ) { return; }
 
-    // https://github.com/gorhill/uBlock/issues/2950
-    // Firefox 56 does not normalize URLs to ASCII, uBO must do this itself.
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=945240
-    const evalMustPunycode = ( ) => {
-        return vAPI.webextFlavor.soup.has('firefox') &&
-               vAPI.webextFlavor.major < 57;
-    };
-
-    let mustPunycode = evalMustPunycode();
-
-    // The real actual webextFlavor value may not be set in stone, so listen
-    // for possible future changes.
-    window.addEventListener('webextFlavor', ( ) => {
-        mustPunycode = evalMustPunycode();
-    }, { once: true });
-
-    const punycode = self.punycode;
-    const reAsciiHostname  = /^https?:\/\/[0-9a-z_.:@-]+[/?#]/;
-    const parsedURL = new URL('about:blank');
-
     // Canonical name-uncloaking feature.
-    let cnameUncloak = browser.dns instanceof Object;
+    let cnameUncloakEnabled = browser.dns instanceof Object;
     let cnameUncloakProxied = false;
 
     // https://github.com/uBlockOrigin/uBlock-issues/issues/911
@@ -59,7 +46,7 @@
     //   DNS leaks.
     const proxyDetector = function(details) {
         if ( details.proxyInfo instanceof Object ) {
-            cnameUncloak = false;
+            cnameUncloakEnabled = false;
             proxyDetectorTryCount = 0;
         }
         if ( proxyDetectorTryCount === 0 ) {
@@ -81,6 +68,7 @@
         constructor() {
             super();
             this.pendingRequests = [];
+            this.canUncloakCnames = browser.dns instanceof Object;
             this.cnames = new Map([ [ '', '' ] ]);
             this.cnameIgnoreList = null;
             this.cnameIgnore1stParty = true;
@@ -92,9 +80,10 @@
         }
         setOptions(options) {
             super.setOptions(options);
-            if ( 'cnameUncloak' in options ) {
-                cnameUncloak = browser.dns instanceof Object &&
-                               options.cnameUncloak !== false;
+            if ( 'cnameUncloakEnabled' in options ) {
+                cnameUncloakEnabled =
+                    this.canUncloakCnames &&
+                    options.cnameUncloakEnabled !== false;
             }
             if ( 'cnameUncloakProxied' in options ) {
                 cnameUncloakProxied = options.cnameUncloakProxied === true;
@@ -127,7 +116,7 @@
             //   Install/remove proxy detector.
             if ( vAPI.webextFlavor.major < 80 ) {
                 const wrohr = browser.webRequest.onHeadersReceived;
-                if ( cnameUncloak === false || cnameUncloakProxied ) {
+                if ( cnameUncloakEnabled === false || cnameUncloakProxied ) {
                     if ( wrohr.hasListener(proxyDetector) ) {
                         wrohr.removeListener(proxyDetector);
                     }
@@ -142,14 +131,6 @@
             }
         }
         normalizeDetails(details) {
-            if ( mustPunycode && !reAsciiHostname.test(details.url) ) {
-                parsedURL.href = details.url;
-                details.url = details.url.replace(
-                    parsedURL.hostname,
-                    punycode.toASCII(parsedURL.hostname)
-                );
-            }
-
             const type = details.type;
 
             if ( type === 'imageset' ) {
@@ -229,7 +210,7 @@
             if (
                 cname !== '' &&
                 this.cnameIgnore1stParty &&
-                vAPI.domainFromHostname(cname) === vAPI.domainFromHostname(hn)
+                domainFromHostname(cname) === domainFromHostname(hn)
             ) {
                 cname = '';
             }
@@ -266,7 +247,7 @@
         }
         onBeforeSuspendableRequest(details) {
             const r = super.onBeforeSuspendableRequest(details);
-            if ( cnameUncloak === false ) { return r; }
+            if ( cnameUncloakEnabled === false ) { return r; }
             if ( r !== undefined ) {
                 if (
                     r.cancel === true ||
@@ -282,7 +263,7 @@
             ) {
                 return;
             }
-            const hn = vAPI.hostnameFromNetworkURL(details.url);
+            const hn = hostnameFromNetworkURL(details.url);
             const cname = this.cnames.get(hn);
             if ( cname === '' ) { return; }
             if ( cname !== undefined ) {
