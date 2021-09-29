@@ -19,6 +19,8 @@
     Home: https://github.com/gorhill/uBlock
 */
 
+/* globals WebAssembly */
+
 'use strict';
 
 /******************************************************************************/
@@ -27,14 +29,12 @@ import { createRequire } from 'module';
 
 import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { domainToASCII, fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-import './lib/punycode.js';
-import './lib/publicsuffixlist/publicsuffixlist.js';
+import publicSuffixList from './lib/publicsuffixlist/publicsuffixlist.js';
 
-import globals from './js/globals.js';
 import snfe from './js/static-net-filtering.js';
 import { FilteringContext } from './js/filtering-context.js';
 import { LineIterator } from './js/text-utils.js';
@@ -57,11 +57,11 @@ async function enableWASM() {
     const wasmModuleFetcher = function(path) {
         const require = createRequire(import.meta.url); // jshint ignore:line
         const wasm = new Uint8Array(require(`${path}.wasm.json`));
-        return globals.WebAssembly.compile(wasm);
+        return WebAssembly.compile(wasm);
     };
     try {
         const results = await Promise.all([
-            globals.publicSuffixList.enableWASM(wasmModuleFetcher, './lib/publicsuffixlist/wasm/'),
+            publicSuffixList.enableWASM(wasmModuleFetcher, './lib/publicsuffixlist/wasm/'),
             snfe.enableWASM(wasmModuleFetcher, './js/wasm/'),
         ]);
         return results.every(a => a === true);
@@ -75,8 +75,8 @@ async function enableWASM() {
 
 function pslInit(raw) {
     if ( typeof raw === 'string' && raw.trim() !== '' ) {
-        globals.publicSuffixList.parse(raw, globals.punycode.toASCII);
-        return globals.publicSuffixList;
+        publicSuffixList.parse(raw, domainToASCII);
+        return publicSuffixList;
     }
 
     // Use serialized version if available
@@ -91,8 +91,8 @@ function pslInit(raw) {
         }
     }
     if ( serialized !== null ) {
-        globals.publicSuffixList.fromSelfie(serialized);
-        return globals.publicSuffixList;
+        publicSuffixList.fromSelfie(serialized);
+        return publicSuffixList;
     }
 
     raw = readFileSync(
@@ -103,8 +103,8 @@ function pslInit(raw) {
         console.error('Unable to populate public suffix list');
         return;
     }
-    globals.publicSuffixList.parse(raw, globals.punycode.toASCII);
-    return globals.publicSuffixList;
+    publicSuffixList.parse(raw, domainToASCII);
+    return publicSuffixList;
 }
 
 /******************************************************************************/
@@ -180,7 +180,7 @@ async function useLists(lists, options = {}) {
 
     useLists.promise = Promise.all(promises);
     await useLists.promise;
-    useLists.promise = null;
+    useLists.promise = null; // eslint-disable-line require-atomic-updates
 
     // Commit changes
     snfe.freeze();

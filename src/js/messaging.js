@@ -23,12 +23,11 @@
 
 /******************************************************************************/
 
-import '../lib/publicsuffixlist/publicsuffixlist.js';
-import '../lib/punycode.js';
+import publicSuffixList from '../lib/publicsuffixlist/publicsuffixlist.js';
+import punycode from '../lib/punycode.js';
 
 import cacheStorage from './cachestorage.js';
 import cosmeticFilteringEngine from './cosmetic-filtering.js';
-import globals from './globals.js';
 import logger from './logger.js';
 import lz4Codec from './lz4.js';
 import io from './assets.js';
@@ -226,11 +225,12 @@ const onMessage = function(request, sender, callback) {
 
     case 'userSettings':
         response = µb.changeUserSettings(request.name, request.value);
-        if (
-            vAPI.net.canUncloakCnames !== true &&
-            response instanceof Object
-        ) {
-            response.cnameUncloakEnabled = undefined;
+        if ( response instanceof Object ) {
+            if ( vAPI.net.canUncloakCnames !== true ) {
+                response.cnameUncloakEnabled = undefined;
+            }
+            response.canLeakLocalIPAddresses =
+                vAPI.browserSettings.canLeakLocalIPAddresses === true;
         }
         break;
 
@@ -1087,7 +1087,6 @@ const getLists = async function(callback) {
 
 // TODO: also return origin of embedded frames?
 const getOriginHints = function() {
-    const punycode = globals.punycode;
     const out = new Set();
     for ( const tabId of µb.pageStores.keys() ) {
         if ( tabId === -1 ) { continue; }
@@ -1116,7 +1115,7 @@ const getRules = function() {
                 sessionSwitches.toArray(),
                 sessionURLFiltering.toArray()
             ),
-        pslSelfie: globals.publicSuffixList.toSelfie(),
+        pslSelfie: publicSuffixList.toSelfie(),
     };
 };
 

@@ -19,22 +19,19 @@
     Home: https://github.com/gorhill/uBlock
 */
 
-/* globals self */
-
-'use strict';
-
-/******************************************************************************/
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
-
-const globals = (( ) => {
-    // jshint ignore:start
-    if ( typeof globalThis !== 'undefined' ) { return globalThis; }
-    if ( typeof self !== 'undefined' ) { return self; }
-    if ( typeof global !== 'undefined' ) { return global; }
-    // jshint ignore:end
+(function() {
+    'use strict';
+    let browserId = '';
+    for ( let i = 0; i < 8; i++ ) {
+        browserId += (Math.random() * 0x10000 + 0x1000 | 0).toString(16).slice(-4);
+    }
+    const fp2 = function(){};
+    fp2.get = function(opts, cb) {
+        if ( !cb  ) { cb = opts; }
+        setTimeout(( ) => { cb(browserId, []); }, 1);
+    };
+    fp2.prototype = {
+        get: fp2.get
+    };
+    window.Fingerprint2 = fp2;
 })();
-
-/******************************************************************************/
-
-export default globals;
